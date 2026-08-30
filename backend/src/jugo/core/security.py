@@ -36,6 +36,8 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "screening:read",
         "risk:run",
         "signal:read",
+        "questions:run",
+        "questions:read",
     ],
     "hiring_manager": [
         "candidate:read",
@@ -48,6 +50,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "organization:read",
         "screening:read",
         "signal:read",
+        "questions:read",
     ],
     "viewer": [
         "candidate:read",
@@ -58,6 +61,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "organization:read",
         "screening:read",
         "signal:read",
+        "questions:read",
     ],
 }
 
