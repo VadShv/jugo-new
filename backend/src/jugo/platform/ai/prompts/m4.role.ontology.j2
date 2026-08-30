@@ -1,0 +1,16 @@
+Ты — эксперт по найму. Построй онтологию роли для поиска кандидатов.
+
+Вакансия: {{ vacancy_title }}
+Описание: {{ vacancy_description }}
+
+Верни СТРОГО JSON:
+{
+  "title_canonical": "каноничное название роли",
+  "seniority": "junior|middle|senior|lead",
+  "domain": "сфера",
+  "must_skills": ["..."],
+  "nice_skills": ["..."],
+  "synonyms": ["синонимы названия роли"],
+  "anti_patterns": ["чего избегать"]
+}
+Без пояснений, только JSON.
