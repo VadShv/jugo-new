@@ -1,0 +1,16 @@
+# Default owner
+* @VadShv
+
+# Core / platform / contracts — architect review
+/backend/src/jugo/core/ @VadShv
+/backend/src/jugo/platform/ @VadShv
+/contracts/ @VadShv
+
+# Modules — separate zones (one owner each, assignable to agents)
+/backend/src/jugo/modules/m1_screening/ @VadShv
+/backend/src/jugo/modules/m2_risk/ @VadShv
+/backend/src/jugo/modules/m3_questions/ @VadShv
+/backend/src/jugo/modules/m4_searchmap/ @VadShv
+/backend/src/jugo/modules/m5_analytics/ @VadShv
+/backend/src/jugo/modules/m6_scheduler/ @VadShv
+/frontend/src/modules/ @VadShv

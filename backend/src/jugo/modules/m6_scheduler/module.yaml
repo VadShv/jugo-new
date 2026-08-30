@@ -1,0 +1,9 @@
+name: m6_scheduler
+version: 0.1.0
+consumes_events: [interview.scheduled, interview.completed, interview.canceled]
+publishes_events: [interview.scheduled, interview.completed, interview.canceled]
+core_facades: [applications.read]
+tables_prefix: m6_
+permissions: [interview:write, interview:read]
+prompts: []
+api_prefix: /api/v1/interviews

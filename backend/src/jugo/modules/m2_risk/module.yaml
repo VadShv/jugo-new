@@ -1,0 +1,9 @@
+name: m2_risk
+version: 0.1.0
+consumes_events: [screening.completed]
+publishes_events: [risk.analysis.completed]
+core_facades: [applications.read, resumes.read]
+tables_prefix: m2_
+permissions: [signal:read, risk:run]
+prompts: [m2.risk.analyze]
+api_prefix: /api/v1/risk

@@ -1,0 +1,9 @@
+name: m3_questions
+version: 0.1.0
+consumes_events: [risk.analysis.completed]
+publishes_events: [questions.generated]
+core_facades: [applications.read, resumes.read]
+tables_prefix: m3_
+permissions: [questions:run, questions:read]
+prompts: [m3.questions.generate]
+api_prefix: /api/v1/questions

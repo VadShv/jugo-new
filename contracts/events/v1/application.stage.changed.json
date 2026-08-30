@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://jugo/contracts/events/v1/application.stage.changed.json",
+  "title": "application.stage.changed",
+  "type": "object",
+  "required": ["event_id", "event_type", "schema_version", "occurred_at", "tenant_id", "actor", "aggregate", "payload"],
+  "properties": {
+    "event_id": { "type": "string", "format": "uuid" },
+    "event_type": { "const": "application.stage.changed" },
+    "schema_version": { "const": 1 },
+    "occurred_at": { "type": "string", "format": "date-time" },
+    "tenant_id": { "type": "string", "format": "uuid" },
+    "actor": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "enum": ["user", "system", "ai_agent", "integration"] },
+        "id": { "type": "string" }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "required": ["type", "id"],
+      "properties": {
+        "type": { "const": "application" },
+        "id": { "type": "string", "format": "uuid" }
+      }
+    },
+    "payload": {
+      "type": "object",
+      "required": ["from_stage_id", "to_stage_id"],
+      "properties": {
+        "from_stage_id": { "type": ["string", "null"], "format": "uuid" },
+        "to_stage_id": { "type": "string", "format": "uuid" },
+        "reason": { "type": ["string", "null"] }
+      }
+    },
+    "trace_id": { "type": ["string", "null"] }
+  }
+}

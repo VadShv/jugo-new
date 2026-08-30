@@ -1,0 +1,9 @@
+name: m5_analytics
+version: 0.1.0
+consumes_events: ["*"]
+publishes_events: []
+core_facades: []
+tables_prefix: m5_
+permissions: [analytics:read]
+prompts: []
+api_prefix: /api/v1/analytics

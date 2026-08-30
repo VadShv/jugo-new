@@ -1,0 +1,9 @@
+name: m1_screening
+version: 0.1.0
+consumes_events: [application.created, resume.version.created]
+publishes_events: [screening.completed]
+core_facades: [applications.read, vacancies.read, resumes.read, funnel.transition]
+tables_prefix: m1_
+permissions: [screening:run, screening:read, screening:override]
+prompts: [m1.criteria.generate, m1.screening.score]
+api_prefix: /api/v1/screening

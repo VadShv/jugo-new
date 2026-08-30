@@ -1,0 +1,9 @@
+name: m4_searchmap
+version: 0.1.0
+consumes_events: [vacancy.published]
+publishes_events: [searchmap.generated]
+core_facades: [vacancies.read]
+tables_prefix: m4_
+permissions: [searchmap:run, searchmap:read]
+prompts: [m4.role.ontology, m4.donors, m4.hypothesis, m4.terms]
+api_prefix: /api/v1/search-map
