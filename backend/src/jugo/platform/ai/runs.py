@@ -31,9 +31,7 @@ async def log_ai_run(session: AsyncSession, **fields: Any) -> None:
             "provider": fields.get("provider"),
             "model": fields.get("model"),
             "prompt_version": fields.get("prompt_version"),
-            "input_payload": json.dumps(
-                fields.get("input_payload"), default=str
-            ),
+            "input_payload": json.dumps(fields.get("input_payload"), default=str),
             "output": json.dumps(fields.get("output"), default=str),
             "latency_ms": fields.get("latency_ms"),
             "status": fields.get("status", "ok"),

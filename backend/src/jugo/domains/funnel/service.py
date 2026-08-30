@@ -35,9 +35,7 @@ def _project_status(stage_type: str) -> str:
     return _STATUS_PROJECTION.get(stage_type, "in_progress")
 
 
-async def create_preset(
-    session: AsyncSession, data: FunnelPresetCreate
-) -> FunnelPresetOut:
+async def create_preset(session: AsyncSession, data: FunnelPresetCreate) -> FunnelPresetOut:
     preset = FunnelPreset(**data.model_dump())
     session.add(preset)
     await session.flush()
@@ -71,9 +69,7 @@ async def list_presets(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return FunnelPresetPage(
         items=[FunnelPresetOut.model_validate(p) for p in items],
         next_cursor=next_cursor,
@@ -88,9 +84,7 @@ async def transition(
     actor: uuid.UUID,
     reason: str | None = None,
 ) -> TransitionResult:
-    app_result = await session.execute(
-        select(Application).where(Application.id == application_id)
-    )
+    app_result = await session.execute(select(Application).where(Application.id == application_id))
     app = app_result.scalar_one_or_none()
     if app is None:
         raise ProblemException(
@@ -107,9 +101,7 @@ async def transition(
             detail=f"Application {application_id} is already in stage {to_stage_id}",
         )
 
-    stage_result = await session.execute(
-        select(FunnelStage).where(FunnelStage.id == to_stage_id)
-    )
+    stage_result = await session.execute(select(FunnelStage).where(FunnelStage.id == to_stage_id))
     stage = stage_result.scalar_one_or_none()
     if stage is None:
         raise ProblemException(

@@ -51,9 +51,7 @@ async def list_org_units(
     await apply_rls(session, user)
     limit = max(1, min(limit, MAX_LIMIT))
     stmt = _keyset(
-        select(OrgUnit)
-        .order_by(OrgUnit.updated_at.desc(), OrgUnit.id.desc())
-        .limit(limit + 1),
+        select(OrgUnit).order_by(OrgUnit.updated_at.desc(), OrgUnit.id.desc()).limit(limit + 1),
         cursor,
         OrgUnit.updated_at,
         OrgUnit.id,
@@ -65,9 +63,7 @@ async def list_org_units(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return OrgUnitPage(
         items=[OrgUnitOut.model_validate(o) for o in items],
         next_cursor=next_cursor,
@@ -113,9 +109,7 @@ async def list_legal_entities(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return LegalEntityPage(
         items=[LegalEntityOut.model_validate(e) for e in items],
         next_cursor=next_cursor,

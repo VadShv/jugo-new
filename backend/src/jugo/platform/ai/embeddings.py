@@ -18,9 +18,7 @@ async def embed(texts: list[str]) -> list[list[float]]:
     settings = get_settings()
     keys = [_key(t) for t in texts]
     missing = [
-        (i, t, k)
-        for i, (t, k) in enumerate(zip(texts, keys, strict=True))
-        if k not in _cache
+        (i, t, k) for i, (t, k) in enumerate(zip(texts, keys, strict=True)) if k not in _cache
     ]
     if missing:
         async with httpx.AsyncClient(timeout=30.0) as client:

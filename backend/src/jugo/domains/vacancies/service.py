@@ -29,9 +29,7 @@ async def create(session: AsyncSession, data: VacancyCreate) -> VacancyOut:
 
 
 async def get(session: AsyncSession, vacancy_id: uuid.UUID) -> VacancyOut:
-    result = await session.execute(
-        select(Vacancy).where(Vacancy.id == vacancy_id)
-    )
+    result = await session.execute(select(Vacancy).where(Vacancy.id == vacancy_id))
     vacancy = result.scalar_one_or_none()
     if vacancy is None:
         raise ProblemException(
@@ -50,11 +48,7 @@ async def list(
     status: str | None = None,
 ) -> VacancyPage:
     limit = max(1, min(limit, MAX_LIMIT))
-    stmt = (
-        select(Vacancy)
-        .order_by(Vacancy.updated_at.desc(), Vacancy.id.desc())
-        .limit(limit + 1)
-    )
+    stmt = select(Vacancy).order_by(Vacancy.updated_at.desc(), Vacancy.id.desc()).limit(limit + 1)
     if status is not None:
         stmt = stmt.where(Vacancy.status == status)
     if cursor:
@@ -74,9 +68,7 @@ async def list(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return VacancyPage(
         items=[VacancyOut.model_validate(v) for v in items],
         next_cursor=next_cursor,
@@ -84,12 +76,8 @@ async def list(
     )
 
 
-async def update(
-    session: AsyncSession, vacancy_id: uuid.UUID, data: VacancyUpdate
-) -> VacancyOut:
-    result = await session.execute(
-        select(Vacancy).where(Vacancy.id == vacancy_id)
-    )
+async def update(session: AsyncSession, vacancy_id: uuid.UUID, data: VacancyUpdate) -> VacancyOut:
+    result = await session.execute(select(Vacancy).where(Vacancy.id == vacancy_id))
     vacancy = result.scalar_one_or_none()
     if vacancy is None:
         raise ProblemException(

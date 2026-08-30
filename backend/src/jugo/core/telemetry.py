@@ -20,9 +20,7 @@ _PII_KEYS = frozenset(
 )
 
 
-def _redact_pii(
-    _logger: Any, _method_name: Any, event_dict: dict[str, Any]
-) -> dict[str, Any]:
+def _redact_pii(_logger: Any, _method_name: Any, event_dict: dict[str, Any]) -> dict[str, Any]:
     for key in list(event_dict):
         if isinstance(key, str) and key.lower() in _PII_KEYS:
             event_dict[key] = "***REDACTED***"

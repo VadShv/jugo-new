@@ -17,9 +17,7 @@ DEMO_TENANT_ID = uuid.UUID("00000000-0000-0000-0000-000000000001")
 async def login(payload: LoginRequest) -> LoginResponse:
     settings = get_settings()
     user_id = uuid.uuid5(uuid.NAMESPACE_DNS, payload.email)
-    token = issue_token(
-        user_id=user_id, tenant_id=DEMO_TENANT_ID, role=payload.role
-    )
+    token = issue_token(user_id=user_id, tenant_id=DEMO_TENANT_ID, role=payload.role)
     return LoginResponse(
         access_token=token,
         token_type="bearer",

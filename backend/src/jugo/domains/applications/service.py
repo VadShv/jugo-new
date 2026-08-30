@@ -29,9 +29,7 @@ async def create(session: AsyncSession, data: ApplicationCreate) -> ApplicationO
 
 
 async def get(session: AsyncSession, application_id: uuid.UUID) -> ApplicationOut:
-    result = await session.execute(
-        select(Application).where(Application.id == application_id)
-    )
+    result = await session.execute(select(Application).where(Application.id == application_id))
     application = result.scalar_one_or_none()
     if application is None:
         raise ProblemException(
@@ -80,9 +78,7 @@ async def list(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return ApplicationPage(
         items=[ApplicationOut.model_validate(a) for a in items],
         next_cursor=next_cursor,
@@ -93,9 +89,7 @@ async def list(
 async def update(
     session: AsyncSession, application_id: uuid.UUID, data: ApplicationUpdate
 ) -> ApplicationOut:
-    result = await session.execute(
-        select(Application).where(Application.id == application_id)
-    )
+    result = await session.execute(select(Application).where(Application.id == application_id))
     application = result.scalar_one_or_none()
     if application is None:
         raise ProblemException(

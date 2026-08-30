@@ -23,9 +23,7 @@ async def list_presets(
     return await service.list_presets(session, limit=limit, cursor=cursor)
 
 
-@router.post(
-    "/presets", response_model=FunnelPresetOut, status_code=status.HTTP_201_CREATED
-)
+@router.post("/presets", response_model=FunnelPresetOut, status_code=status.HTTP_201_CREATED)
 async def create_preset(
     payload: FunnelPresetCreate,
     session: AsyncSession = Depends(get_session),

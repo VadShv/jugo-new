@@ -12,6 +12,7 @@ from jugo.domains.resumes.router import router as resumes_router
 from jugo.domains.search.router import router as search_router
 from jugo.domains.vacancies.router import router as vacancies_router
 from jugo.modules.m1_screening.router import router as m1_screening_router
+from jugo.modules.m2_risk.router import router as m2_risk_router
 
 api_router = APIRouter()
 api_router.include_router(auth_router)
@@ -24,5 +25,6 @@ api_router.include_router(search_router)
 api_router.include_router(files_router)
 api_router.include_router(organization_router)
 api_router.include_router(m1_screening_router)
+api_router.include_router(m2_risk_router)
 
 __all__ = ["api_router"]

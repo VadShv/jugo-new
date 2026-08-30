@@ -66,9 +66,7 @@ def _candidate_filter_clause(filters: dict[str, str]) -> tuple[str, dict[str, An
     return (" AND ".join(clauses), params) if clauses else ("", params)
 
 
-async def search_candidates(
-    session: AsyncSession, request: SearchRequest
-) -> SearchResponse:
+async def search_candidates(session: AsyncSession, request: SearchRequest) -> SearchResponse:
     offset = _resolve_offset(request.cursor)
     extra, fparams = _candidate_filter_clause(request.filters)
     where = (
@@ -107,9 +105,7 @@ async def search_candidates(
     )
 
 
-async def search_vacancies(
-    session: AsyncSession, request: SearchRequest
-) -> SearchResponse:
+async def search_vacancies(session: AsyncSession, request: SearchRequest) -> SearchResponse:
     offset = _resolve_offset(request.cursor)
     extra_clauses: list[str] = []
     vparams: dict[str, Any] = {}
@@ -153,9 +149,7 @@ async def search_vacancies(
     )
 
 
-async def search_applications(
-    session: AsyncSession, request: SearchRequest
-) -> SearchResponse:
+async def search_applications(session: AsyncSession, request: SearchRequest) -> SearchResponse:
     offset = _resolve_offset(request.cursor)
     extra_clauses: list[str] = []
     aparams: dict[str, Any] = {}
@@ -201,9 +195,7 @@ async def search_applications(
     )
 
 
-async def search(
-    session: AsyncSession, entity: str, request: SearchRequest
-) -> SearchResponse:
+async def search(session: AsyncSession, entity: str, request: SearchRequest) -> SearchResponse:
     dispatch = {
         "candidates": search_candidates,
         "vacancies": search_vacancies,

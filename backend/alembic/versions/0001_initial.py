@@ -5,6 +5,7 @@ Revises:
 Create Date: 2026-08-30 00:00:00.000000
 
 """
+
 from __future__ import annotations
 
 from alembic import op
@@ -154,17 +155,13 @@ def upgrade() -> None:
         )
         """
     )
-    op.execute(
-        "CREATE INDEX candidates_search_vector_gin ON candidates "
-        "USING gin (search_vector)"
-    )
+    op.execute("CREATE INDEX candidates_search_vector_gin ON candidates USING gin (search_vector)")
     op.execute(
         "CREATE INDEX candidates_name_trgm ON candidates "
         "USING gin (last_name gin_trgm_ops, first_name gin_trgm_ops)"
     )
     op.execute(
-        "CREATE INDEX candidates_tenant_updated_idx ON candidates "
-        "(tenant_id, updated_at DESC)"
+        "CREATE INDEX candidates_tenant_updated_idx ON candidates (tenant_id, updated_at DESC)"
     )
 
     op.execute(
@@ -264,13 +261,9 @@ def upgrade() -> None:
         )
         """
     )
+    op.execute("CREATE INDEX vacancies_search_vector_gin ON vacancies USING gin (search_vector)")
     op.execute(
-        "CREATE INDEX vacancies_search_vector_gin ON vacancies "
-        "USING gin (search_vector)"
-    )
-    op.execute(
-        "CREATE INDEX vacancies_tenant_updated_idx ON vacancies "
-        "(tenant_id, updated_at DESC)"
+        "CREATE INDEX vacancies_tenant_updated_idx ON vacancies (tenant_id, updated_at DESC)"
     )
 
     op.execute(

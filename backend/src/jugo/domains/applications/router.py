@@ -73,9 +73,7 @@ async def update_application(
     return await service.update(session, application_id, payload)
 
 
-@router.post(
-    "/{application_id}/transition", response_model=TransitionResult
-)
+@router.post("/{application_id}/transition", response_model=TransitionResult)
 async def transition_application(
     application_id: uuid.UUID,
     payload: TransitionRequest,

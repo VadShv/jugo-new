@@ -28,15 +28,11 @@ async def _load_vacancy(session: AsyncSession, vacancy_id: uuid.UUID) -> Vacancy
     result = await session.execute(select(Vacancy).where(Vacancy.id == vacancy_id))
     vacancy = result.scalar_one_or_none()
     if vacancy is None:
-        raise ProblemException(
-            404, "about:blank", "Vacancy not found", detail=str(vacancy_id)
-        )
+        raise ProblemException(404, "about:blank", "Vacancy not found", detail=str(vacancy_id))
     return vacancy
 
 
-async def _latest_resume_text(
-    session: AsyncSession, candidate_id: uuid.UUID
-) -> str:
+async def _latest_resume_text(session: AsyncSession, candidate_id: uuid.UUID) -> str:
     result = await session.execute(
         select(ResumeVersion.parsed_text)
         .join(ResumeSource, ResumeSource.id == ResumeVersion.resume_source_id)
@@ -105,18 +101,14 @@ async def generate_requirements(
 async def screen(
     session: AsyncSession, application_id: uuid.UUID, actor: uuid.UUID
 ) -> ScreeningResultOut:
-    app_result = await session.execute(
-        select(Application).where(Application.id == application_id)
-    )
+    app_result = await session.execute(select(Application).where(Application.id == application_id))
     app = app_result.scalar_one_or_none()
     if app is None:
         raise ProblemException(
             404, "about:blank", "Application not found", detail=str(application_id)
         )
 
-    cand_result = await session.execute(
-        select(Candidate).where(Candidate.id == app.candidate_id)
-    )
+    cand_result = await session.execute(select(Candidate).where(Candidate.id == app.candidate_id))
     candidate = cand_result.scalar_one_or_none()
     if candidate is None:
         raise ProblemException(
@@ -216,9 +208,7 @@ async def screen(
     return ScreeningResultOut.model_validate(screening)
 
 
-async def get_result(
-    session: AsyncSession, application_id: uuid.UUID
-) -> ScreeningResultOut:
+async def get_result(session: AsyncSession, application_id: uuid.UUID) -> ScreeningResultOut:
     result = await session.execute(
         select(M1ScreeningResult)
         .where(M1ScreeningResult.application_id == application_id)

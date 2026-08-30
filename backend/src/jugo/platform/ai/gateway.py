@@ -23,8 +23,7 @@ class LLMProvider(ABC):
     name: str = ""
 
     @abstractmethod
-    async def complete(self, prompt: str, *, model: str | None = None) -> AIResult:
-        ...
+    async def complete(self, prompt: str, *, model: str | None = None) -> AIResult: ...
 
 
 class OpenAIProvider(LLMProvider):

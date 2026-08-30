@@ -29,9 +29,7 @@ async def create(session: AsyncSession, data: CandidateCreate) -> CandidateOut:
 
 
 async def get(session: AsyncSession, candidate_id: uuid.UUID) -> CandidateOut:
-    result = await session.execute(
-        select(Candidate).where(Candidate.id == candidate_id)
-    )
+    result = await session.execute(select(Candidate).where(Candidate.id == candidate_id))
     candidate = result.scalar_one_or_none()
     if candidate is None:
         raise ProblemException(
@@ -71,9 +69,7 @@ async def list(
     next_cursor: str | None = None
     if has_more and items:
         last = items[-1]
-        next_cursor = encode_cursor(
-            {"updated_at": last.updated_at.isoformat(), "id": str(last.id)}
-        )
+        next_cursor = encode_cursor({"updated_at": last.updated_at.isoformat(), "id": str(last.id)})
     return CandidatePage(
         items=[CandidateOut.model_validate(c) for c in items],
         next_cursor=next_cursor,
@@ -84,9 +80,7 @@ async def list(
 async def update(
     session: AsyncSession, candidate_id: uuid.UUID, data: CandidateUpdate
 ) -> CandidateOut:
-    result = await session.execute(
-        select(Candidate).where(Candidate.id == candidate_id)
-    )
+    result = await session.execute(select(Candidate).where(Candidate.id == candidate_id))
     candidate = result.scalar_one_or_none()
     if candidate is None:
         raise ProblemException(

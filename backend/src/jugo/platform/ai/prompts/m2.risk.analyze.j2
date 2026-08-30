@@ -1,0 +1,27 @@
+Ты — аналитик рисков при найме. Проанализируй резюме кандидата на предмет рисков
+(несоответствия дат, пробелы, скачки зарплат, несоответствие опыта вакансии и т.д.).
+
+Вакансия: {{ vacancy_title }}
+Кандидат: {{ candidate_name }}
+Резюме:
+{{ resume_text }}
+
+Найди сигналы риска. Для каждого сигнала укажи:
+- code: краткий код (например: date_math, tenure_gap, salary_jump, experience_mismatch, document, cross_source)
+- severity: low | medium | high
+- confidence: 0.0–1.0
+- evidence: обоснование со ссылкой на резюме
+- alternative_explanation: добросовестное объяснение
+- verification_question: что уточнить у кандидата
+
+Верни СТРОГО JSON:
+{
+  "risk_level": "low" | "medium" | "high",
+  "summary": "краткая сводка",
+  "signals": [
+    {"code": "...", "severity": "...", "confidence": 0.0,
+     "evidence": "...", "alternative_explanation": "...", "verification_question": "..."}
+  ]
+}
+
+Без пояснений, только JSON.
