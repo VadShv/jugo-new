@@ -46,9 +46,9 @@ async def get_session() -> AsyncIterator[AsyncSession]:
 async def set_tenant_context(
     session: AsyncSession, tenant_id: uuid.UUID, user_id: uuid.UUID | None = None
 ) -> None:
-    await session.execute(text("SET LOCAL app.tenant_id = :t"), {"t": str(tenant_id)})
+    await session.execute(text(f"SET LOCAL app.tenant_id = '{tenant_id}'"))
     if user_id is not None:
-        await session.execute(text("SET LOCAL app.user_id = :u"), {"u": str(user_id)})
+        await session.execute(text(f"SET LOCAL app.user_id = '{user_id}'"))
 
 
 async def ping_db() -> bool:
