@@ -63,15 +63,6 @@ async def generate_requirements(
         )
     criteria = [Criterion.model_validate(item) for item in parsed]
 
-    latest_result = await session.execute(
-        select(VacancyRequirementSet.version_no)
-        .where(VacancyRequirementSet.vacancy_id == vacancy_id)
-        .order_by(VacancyRequirementSet.version_no.desc())
-        .limit(1)
-    )
-    latest = latest_result.scalar_one_or_none()
-    next_version = (latest + 1) if latest else 1
-
     await session.execute(
         update(VacancyRequirementSet)
         .where(VacancyRequirementSet.vacancy_id == vacancy_id)
@@ -80,11 +71,9 @@ async def generate_requirements(
 
     req_set = VacancyRequirementSet(
         vacancy_id=vacancy_id,
-        version_no=next_version,
-        origin="ai",
-        criteria=[c.model_dump() for c in criteria],
+        name="AI criteria",
+        requirements=[c.model_dump() for c in criteria],
         is_active=True,
-        created_by=actor,
     )
     session.add(req_set)
     await session.flush()
@@ -97,7 +86,7 @@ async def generate_requirements(
         model=result.model,
         prompt_version=1,
         input_payload=payload,
-        output={"criteria": [c.model_dump() for c in criteria]},
+        output={"requirements": [c.model_dump() for c in criteria]},
         latency_ms=result.latency_ms,
         status="ok",
         actor_id=actor,
@@ -108,7 +97,7 @@ async def generate_requirements(
         action="m1.requirements.generate",
         entity_type="vacancy",
         entity_id=vacancy_id,
-        after={"version_no": next_version, "count": len(criteria)},
+        after={"count": len(criteria)},
     )
     return RequirementSetOut.model_validate(req_set)
 
@@ -142,11 +131,11 @@ async def screen(
             VacancyRequirementSet.vacancy_id == app.vacancy_id,
             VacancyRequirementSet.is_active.is_(True),
         )
-        .order_by(VacancyRequirementSet.version_no.desc())
+        .order_by(VacancyRequirementSet.created_at.desc())
         .limit(1)
     )
     req_set = req_result.scalar_one_or_none()
-    criteria = req_set.criteria if req_set and req_set.criteria else []
+    criteria = req_set.requirements if req_set else []
 
     resume_text = await _latest_resume_text(session, app.candidate_id)
 
@@ -219,7 +208,10 @@ async def screen(
         action="m1.screening.run",
         entity_type="application",
         entity_id=application_id,
-        after={"recommendation": screening.recommendation, "score": screening.total_score},
+        after={
+            "recommendation": screening.recommendation,
+            "score": screening.total_score,
+        },
     )
     return ScreeningResultOut.model_validate(screening)
 

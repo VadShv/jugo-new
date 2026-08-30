@@ -17,9 +17,8 @@ class RequirementSetOut(BaseModel):
 
     id: uuid.UUID
     vacancy_id: uuid.UUID
-    version_no: int
-    origin: str
-    criteria: list[Criterion]
+    name: str
+    requirements: list[Criterion]
     is_active: bool
     created_at: datetime
 

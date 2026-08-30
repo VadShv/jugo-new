@@ -30,7 +30,8 @@ def upgrade() -> None:
     op.execute(
         f"""CREATE TABLE {M1_TABLE} (
             id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-            tenant_id uuid NOT NULL,
+            tenant_id uuid NOT NULL DEFAULT
+                current_setting('app.tenant_id')::uuid,
             application_id uuid NOT NULL,
             vacancy_id uuid NOT NULL,
             candidate_id uuid NOT NULL,
@@ -54,7 +55,7 @@ def upgrade() -> None:
     op.execute(f"ALTER TABLE {M1_TABLE} FORCE ROW LEVEL SECURITY")
     op.execute(
         f"CREATE POLICY tenant_isolation ON {M1_TABLE} "
-        "USING (tenant_id = current_setting('app.tenant_id', true)::uuid)"
+        "USING (tenant_id = current_setting('app.tenant_id')::uuid)"
     )
 
     op.execute(
@@ -74,13 +75,13 @@ def upgrade() -> None:
         )
     for task in ("m1.criteria.generate", "m1.screening.score"):
         op.execute(
-            f"INSERT INTO ai_task_route (task, provider, model, is_active) "
-            f"VALUES ('{task}', 'openai', 'gpt-4o-mini', true) "
-            f"ON CONFLICT (task) DO NOTHING"
+            f"INSERT INTO ai_task_routes (tenant_id, task, provider, model) "
+            f"VALUES ('{TENANT}', '{task}', 'openai', 'gpt-4o-mini') "
+            f"ON CONFLICT DO NOTHING"
         )
     op.execute(
-        "INSERT INTO feature_flags (key, enabled) "
-        "VALUES ('m1_screening', true) ON CONFLICT (key) DO NOTHING"
+        f"INSERT INTO feature_flags (tenant_id, key, enabled) "
+        f"VALUES ('{TENANT}', 'm1_screening', true) ON CONFLICT DO NOTHING"
     )
 
 
