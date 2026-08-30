@@ -40,6 +40,8 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "questions:read",
         "searchmap:run",
         "searchmap:read",
+        "interview:write",
+        "interview:read",
     ],
     "hiring_manager": [
         "candidate:read",
@@ -54,6 +56,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "signal:read",
         "questions:read",
         "searchmap:read",
+        "interview:read",
     ],
     "viewer": [
         "candidate:read",
@@ -66,6 +69,7 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "signal:read",
         "questions:read",
         "searchmap:read",
+        "interview:read",
     ],
 }
 
