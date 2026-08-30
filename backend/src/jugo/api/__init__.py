@@ -15,6 +15,7 @@ from jugo.modules.m1_screening.router import router as m1_screening_router
 from jugo.modules.m2_risk.router import router as m2_risk_router
 from jugo.modules.m3_questions.router import router as m3_questions_router
 from jugo.modules.m4_searchmap.router import router as m4_searchmap_router
+from jugo.modules.m5_analytics.router import router as m5_analytics_router
 from jugo.modules.m6_scheduler.router import router as m6_scheduler_router
 
 api_router = APIRouter()
@@ -31,6 +32,7 @@ api_router.include_router(m1_screening_router)
 api_router.include_router(m2_risk_router)
 api_router.include_router(m3_questions_router)
 api_router.include_router(m4_searchmap_router)
+api_router.include_router(m5_analytics_router)
 api_router.include_router(m6_scheduler_router)
 
 __all__ = ["api_router"]
