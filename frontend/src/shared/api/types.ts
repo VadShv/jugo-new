@@ -75,3 +75,28 @@ export interface FunnelStage {
   created_at: string
   updated_at: string
 }
+
+export interface FunnelOut {
+  vacancy_id: string
+  total: number
+  by_status: Record<string, number>
+  by_stage: Array<{ stage_id: string | null; count: number }>
+  hired_rate: number
+  reject_rate: number
+}
+
+export interface SourceStat {
+  origin: string
+  count: number
+}
+
+export interface AIStat {
+  task: string
+  count: number
+  avg_latency_ms?: number | null
+}
+
+export interface RecruiterStat {
+  recruiter_id?: string | null
+  count: number
+}
