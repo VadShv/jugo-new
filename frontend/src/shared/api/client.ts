@@ -1,3 +1,5 @@
+import { clearToken, getToken } from './auth'
+
 export interface ProblemDetails {
   type?: string
   title?: string
@@ -21,18 +23,17 @@ export class ApiError extends Error {
 
 const BASE_URL = import.meta.env.VITE_API_URL ?? ''
 
-function getToken(): string | null {
-  try {
-    return localStorage.getItem('ats.token')
-  } catch {
-    return null
+function redirectToLogin(): void {
+  if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+    window.location.assign('/login')
   }
 }
 
 /**
  * Typed fetch wrapper. Prepends VITE_API_URL, injects a Bearer token when
- * present, forwards the caller's AbortSignal, and parses application/problem+json
- * errors into {@link ApiError}.
+ * present, forwards the caller's AbortSignal, parses application/problem+json
+ * errors into {@link ApiError}, and on 401 clears the token and redirects
+ * to /login (unless already there).
  */
 export async function request<T>(
   path: string,
@@ -59,6 +60,10 @@ export async function request<T>(
   }
 
   if (!response.ok) {
+    if (response.status === 401) {
+      clearToken()
+      redirectToLogin()
+    }
     let problem: ProblemDetails | null = null
     const contentType = response.headers.get('content-type') ?? ''
     if (

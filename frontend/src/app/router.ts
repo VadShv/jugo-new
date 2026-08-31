@@ -5,51 +5,74 @@ import {
   redirect,
 } from '@tanstack/react-router'
 import { Layout } from './Layout'
+import { isAuthenticated } from '@/shared/api/auth'
 import VacanciesPage from '../pages/VacanciesPage'
 import CandidatesPage from '../pages/CandidatesPage'
 import ApplicationsPage from '../pages/ApplicationsPage'
 import AnalyticsPage from '../pages/AnalyticsPage'
+import LoginPage from '../pages/LoginPage'
 
-const rootRoute = createRootRoute({ component: Layout })
+const rootRoute = createRootRoute({})
+
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/login',
+  component: LoginPage,
+  beforeLoad: () => {
+    if (isAuthenticated()) throw redirect({ to: '/vacancies' })
+  },
+})
+
+const protectedRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  id: '_protected',
+  component: Layout,
+  beforeLoad: () => {
+    if (!isAuthenticated()) throw redirect({ to: '/login' })
+  },
+})
 
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
   beforeLoad: () => {
-    throw redirect({ to: '/vacancies' })
+    throw redirect({ to: isAuthenticated() ? '/vacancies' : '/login' })
   },
 })
 
 const vacanciesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
   path: '/vacancies',
   component: VacanciesPage,
 })
 
 const candidatesRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
   path: '/candidates',
   component: CandidatesPage,
 })
 
 const applicationsRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
   path: '/applications',
   component: ApplicationsPage,
 })
 
 const analyticsRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => protectedRoute,
   path: '/analytics',
   component: AnalyticsPage,
 })
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  vacanciesRoute,
-  candidatesRoute,
-  applicationsRoute,
-  analyticsRoute,
+  loginRoute,
+  protectedRoute.addChildren([
+    vacanciesRoute,
+    candidatesRoute,
+    applicationsRoute,
+    analyticsRoute,
+  ]),
 ])
 
 export const router = createRouter({ routeTree })

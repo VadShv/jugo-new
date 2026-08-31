@@ -13,11 +13,11 @@
 Цель: UI показывает реальные данные из бэкенда, логин работает, базовые мутации и поиск живые.
 
 ### G1. Экран логина + хранение токена
-- [ ] `frontend/src/pages/LoginPage.tsx`: форма (email, role) → `POST /api/v1/auth/login` → `localStorage['ats.token'] = access_token` → редирект `/vacancies`.
-- [ ] `frontend/src/entities/auth/api.ts`: `login(email, role)`, `fetchMe()`.
-- [ ] `frontend/src/app/router.ts`: добавить `/login` (public); guard на защищённых роутах — без токена редирект на `/login`.
-- [ ] `frontend/src/shared/api/client.ts`: при 401 — очистить токен + редирект `/login`.
-- [ ] Кнопка «Выйти» в `GlassTopBar` (очистка токена).
+- [x] `frontend/src/pages/LoginPage.tsx`: форма (email, password, role) → `POST /api/v1/auth/login` → `localStorage['ats.token'] = access_token` → редирект `/vacancies`.
+- [x] `frontend/src/entities/auth/api.ts`: `login(email, role)`, `fetchMe()`.
+- [x] `frontend/src/app/router.ts`: добавить `/login` (public); guard на защищённых роутах — без токена редирект на `/login`.
+- [x] `frontend/src/shared/api/client.ts`: при 401 — очистить токен + редирект `/login`.
+- [x] Кнопка «Выйти» в `GlassTopBar` (очистка токена).
 - **Приёмка**: логин → реестры грузят данные (200), без токена — редирект на логин.
 - **Зависимости**: — .
 
