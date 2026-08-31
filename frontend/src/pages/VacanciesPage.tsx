@@ -9,7 +9,7 @@ import { GlassSearchField } from '@/shared/ui/GlassSearchField'
 import { GlassSheet } from '@/shared/ui/GlassSheet'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RegistryTable } from '@/widgets/RegistryTable'
-import { fetchVacancies } from '@/entities/vacancy/api'
+import { fetchVacancies, searchVacancies } from '@/entities/vacancy/api'
 import type { Vacancy } from '@/shared/api/types'
 
 const createSchema = z.object({
@@ -119,6 +119,15 @@ export default function VacanciesPage() {
     [],
   )
 
+  const fetchPage = (args: {
+    cursor?: string
+    search?: string
+    signal?: AbortSignal
+  }) =>
+    args.search
+      ? searchVacancies({ q: args.search, cursor: args.cursor, signal: args.signal })
+      : fetchVacancies(args)
+
   return (
     <div className="flex flex-col gap-3">
       <GlassTopBar
@@ -144,7 +153,7 @@ export default function VacanciesPage() {
 
       <RegistryTable
         columns={columns}
-        fetchPage={fetchVacancies}
+        fetchPage={fetchPage}
         queryKeyPrefix={['vacancies']}
         search={search}
         onRowClick={setSelected}

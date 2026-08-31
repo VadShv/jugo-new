@@ -8,7 +8,7 @@ import { GlassSheet } from '@/shared/ui/GlassSheet'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { PipelineStageBar, type PipelineStage } from '@/shared/ui/PipelineStageBar'
 import { RegistryTable } from '@/widgets/RegistryTable'
-import { fetchApplications } from '@/entities/application/api'
+import { fetchApplications, searchApplications } from '@/entities/application/api'
 import type { Application } from '@/shared/api/types'
 
 const STATUS_OPTIONS: { value: string; label: string; accent: string }[] = [
@@ -159,10 +159,18 @@ export default function ApplicationsPage() {
     search?: string
     signal?: AbortSignal
   }) =>
-    fetchApplications({
-      ...args,
-      status: statusFilter === 'all' ? undefined : statusFilter,
-    })
+    args.search
+      ? searchApplications({
+          q: args.search,
+          cursor: args.cursor,
+          signal: args.signal,
+          filters: statusFilter !== 'all' ? { status: statusFilter } : {},
+        })
+      : fetchApplications({
+          cursor: args.cursor,
+          signal: args.signal,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+        })
 
   return (
     <div className="flex flex-col gap-3">

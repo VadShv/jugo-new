@@ -8,26 +8,45 @@ export interface FetchArgs {
   signal?: AbortSignal
 }
 
-function buildPath(cursor?: string, search?: string): string {
+export interface SearchArgs {
+  q: string
+  cursor?: string
+  signal?: AbortSignal
+  filters?: Record<string, string>
+}
+
+function listPath(cursor?: string): string {
   const params = new URLSearchParams()
   if (cursor) params.set('cursor', cursor)
-  if (search) params.set('q', search)
   params.set('limit', '50')
-  const qs = params.toString()
-  return `/api/v1/vacancies${qs ? `?${qs}` : ''}`
+  return `/api/v1/vacancies?${params.toString()}`
 }
 
 export async function fetchVacancies({
   cursor,
-  search,
   signal,
 }: FetchArgs): Promise<Page<Vacancy>> {
-  return request<Page<Vacancy>>(buildPath(cursor, search), { signal })
+  return request<Page<Vacancy>>(listPath(cursor), { signal })
+}
+
+export async function searchVacancies({
+  q,
+  cursor,
+  signal,
+  filters,
+}: SearchArgs): Promise<Page<Vacancy>> {
+  return request<Page<Vacancy>>('/api/v1/search/vacancies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q, cursor, filters: filters ?? {}, limit: 50 }),
+    signal,
+  })
 }
 
 export function useVacancies(search = '') {
   return useQuery({
     queryKey: ['vacancies', search],
-    queryFn: ({ signal }) => fetchVacancies({ search, signal }),
+    queryFn: ({ signal }) =>
+      search ? searchVacancies({ q: search, signal }) : fetchVacancies({ signal }),
   })
 }

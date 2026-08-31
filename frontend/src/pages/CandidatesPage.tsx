@@ -5,7 +5,7 @@ import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { GlassSearchField } from '@/shared/ui/GlassSearchField'
 import { GlassSheet } from '@/shared/ui/GlassSheet'
 import { RegistryTable } from '@/widgets/RegistryTable'
-import { fetchCandidates } from '@/entities/candidate/api'
+import { fetchCandidates, searchCandidates } from '@/entities/candidate/api'
 import { CandidateCard } from '@/entities/candidate/CandidateCard'
 import { useUiStore } from '@/app/store'
 import type { Candidate } from '@/shared/api/types'
@@ -60,6 +60,15 @@ export default function CandidatesPage() {
     [],
   )
 
+  const fetchPage = (args: {
+    cursor?: string
+    search?: string
+    signal?: AbortSignal
+  }) =>
+    args.search
+      ? searchCandidates({ q: args.search, cursor: args.cursor, signal: args.signal })
+      : fetchCandidates(args)
+
   return (
     <div className="flex flex-col gap-3">
       <GlassTopBar
@@ -91,7 +100,7 @@ export default function CandidatesPage() {
 
       <RegistryTable
         columns={columns}
-        fetchPage={fetchCandidates}
+        fetchPage={fetchPage}
         queryKeyPrefix={['candidates']}
         search={search}
         onRowClick={setSelected}

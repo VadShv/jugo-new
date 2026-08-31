@@ -29,8 +29,8 @@
 - **Зависимости**: G1 (нужен токен для проверки).
 
 ### G3. Поиск → POST /search/{entity}
-- [ ] `frontend/src/entities/*/api.ts`: `searchCandidates(q, cursor, signal)` → `POST /api/v1/search/candidates` (body `{q, cursor, limit}`).
-- [ ] `RegistryTable`: при непустом `search` звать `search*` вместо `fetch*`; при пустом — list.
+- [x] `frontend/src/entities/*/api.ts`: `searchCandidates/searchVacancies/searchApplications({q, cursor, signal, filters})` → `POST /api/v1/search/{entity}` (body `{q, cursor, filters, limit}`).
+- [x] Реестры: при непустом `search` зовут `search*` вместо `fetch*`; при пустом — list (list-вызовы больше не шлют `?q=`).
 - **Приёмка**: ввод текста → реальные результаты поиска (FTS).
 - **Зависимости**: G2.
 

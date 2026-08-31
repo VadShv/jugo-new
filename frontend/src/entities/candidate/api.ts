@@ -8,26 +8,47 @@ export interface FetchArgs {
   signal?: AbortSignal
 }
 
-function buildPath(cursor?: string, search?: string): string {
+export interface SearchArgs {
+  q: string
+  cursor?: string
+  signal?: AbortSignal
+  filters?: Record<string, string>
+}
+
+function listPath(cursor?: string): string {
   const params = new URLSearchParams()
   if (cursor) params.set('cursor', cursor)
-  if (search) params.set('q', search)
   params.set('limit', '50')
-  const qs = params.toString()
-  return `/api/v1/candidates${qs ? `?${qs}` : ''}`
+  return `/api/v1/candidates?${params.toString()}`
 }
 
 export async function fetchCandidates({
   cursor,
-  search,
   signal,
 }: FetchArgs): Promise<Page<Candidate>> {
-  return request<Page<Candidate>>(buildPath(cursor, search), { signal })
+  return request<Page<Candidate>>(listPath(cursor), { signal })
+}
+
+export async function searchCandidates({
+  q,
+  cursor,
+  signal,
+  filters,
+}: SearchArgs): Promise<Page<Candidate>> {
+  return request<Page<Candidate>>('/api/v1/search/candidates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ q, cursor, filters: filters ?? {}, limit: 50 }),
+    signal,
+  })
 }
 
 export function useCandidates(search = '') {
   return useQuery({
     queryKey: ['candidates', search],
-    queryFn: ({ signal }) => fetchCandidates({ search, signal }),
+    queryFn: ({ signal }) =>
+      search
+        ? searchCandidates({ q: search, signal })
+        : fetchCandidates({ signal }),
   })
 }
