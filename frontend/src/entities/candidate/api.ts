@@ -15,6 +15,16 @@ export interface SearchArgs {
   filters?: Record<string, string>
 }
 
+export interface CandidateCreatePayload {
+  first_name: string
+  last_name: string
+  headline?: string
+  current_company?: string
+  grade?: string
+  location?: string
+  tags?: string[]
+}
+
 function listPath(cursor?: string): string {
   const params = new URLSearchParams()
   if (cursor) params.set('cursor', cursor)
@@ -40,6 +50,16 @@ export async function searchCandidates({
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q, cursor, filters: filters ?? {}, limit: 50 }),
     signal,
+  })
+}
+
+export async function createCandidate(
+  payload: CandidateCreatePayload,
+): Promise<Candidate> {
+  return request<Candidate>('/api/v1/candidates', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
   })
 }
 

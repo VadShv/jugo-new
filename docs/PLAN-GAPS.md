@@ -35,10 +35,10 @@
 - **Зависимости**: G2.
 
 ### G4. Мутации (создание + переход по воронке)
-- [ ] `VacanciesPage` AddVacancyForm → `POST /api/v1/vacancies` (title, description, status, headcount) + инвалидация кэша.
-- [ ] `CandidatesPage`: форма/кнопка создания кандидата → `POST /api/v1/candidates` (first_name, last_name, headline, grade, location).
-- [ ] `ApplicationsPage`: создание отклика → `POST /api/v1/applications` (candidate_id, vacancy_id, current_stage_id) + переход → `POST /api/v1/applications/{id}/transition` (to_stage_id, reason).
-- [ ] Загрузить пресет/стадии воронки (`GET /api/v1/funnel/presets`) для выбора стадии.
+- [x] `VacanciesPage` AddVacancyForm → `POST /api/v1/vacancies` (title, description) + инвалидация кэша.
+- [x] `CandidatesPage`: кнопка + форма создания кандидата → `POST /api/v1/candidates` (first_name, last_name, headline, grade, location, tags).
+- [x] `ApplicationsPage`: создание отклика → `POST /api/v1/applications` (candidate_id, vacancy_id, current_stage_id) + переход → `POST /api/v1/applications/{id}/transition` (to_stage_id, reason) в карточке отклика.
+- [x] Бэкенд: добавлен `GET /api/v1/funnel/presets/{id}/stages`; фронт: `useDefaultStages()` для селекторов стадий.
 - **Приёмка**: создание + переход отражаются в реестре и аналитике.
 - **Зависимости**: G2.
 

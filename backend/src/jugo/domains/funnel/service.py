@@ -16,6 +16,7 @@ from jugo.domains.funnel.schemas import (
     FunnelPresetCreate,
     FunnelPresetOut,
     FunnelPresetPage,
+    FunnelStageOut,
     TransitionResult,
 )
 
@@ -75,6 +76,17 @@ async def list_presets(
         next_cursor=next_cursor,
         has_more=has_more,
     )
+
+
+async def list_stages(
+    session: AsyncSession, preset_id: uuid.UUID
+) -> list[FunnelStageOut]:
+    result = await session.execute(
+        select(FunnelStage)
+        .where(FunnelStage.preset_id == preset_id)
+        .order_by(FunnelStage.order_index.asc(), FunnelStage.id.asc())
+    )
+    return [FunnelStageOut.model_validate(s) for s in result.scalars().all()]
 
 
 async def transition(

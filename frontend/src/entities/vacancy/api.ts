@@ -15,6 +15,13 @@ export interface SearchArgs {
   filters?: Record<string, string>
 }
 
+export interface VacancyCreatePayload {
+  title: string
+  description?: string
+  status?: string
+  headcount?: number
+}
+
 function listPath(cursor?: string): string {
   const params = new URLSearchParams()
   if (cursor) params.set('cursor', cursor)
@@ -40,6 +47,16 @@ export async function searchVacancies({
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ q, cursor, filters: filters ?? {}, limit: 50 }),
     signal,
+  })
+}
+
+export async function createVacancy(
+  payload: VacancyCreatePayload,
+): Promise<Vacancy> {
+  return request<Vacancy>('/api/v1/vacancies', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: 'draft', headcount: 1, ...payload }),
   })
 }
 

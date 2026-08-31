@@ -53,3 +53,25 @@ export interface Page<T> {
   next_cursor: string | null
   has_more: boolean
 }
+
+export interface FunnelPreset {
+  id: string
+  tenant_id: string
+  name: string
+  description?: string | null
+  is_default: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface FunnelStage {
+  id: string
+  tenant_id: string
+  preset_id?: string | null
+  vacancy_id?: string | null
+  name: string
+  order_index: number
+  stage_type: string
+  created_at: string
+  updated_at: string
+}
