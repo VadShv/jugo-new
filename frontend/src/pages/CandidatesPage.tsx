@@ -10,6 +10,10 @@ import { CandidateCard } from '@/entities/candidate/CandidateCard'
 import { useUiStore } from '@/app/store'
 import type { Candidate } from '@/shared/api/types'
 
+function fullName(c: Candidate): string {
+  return `${c.last_name} ${c.first_name}`.trim()
+}
+
 export default function CandidatesPage() {
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<Candidate | null>(null)
@@ -20,17 +24,16 @@ export default function CandidatesPage() {
     () => [
       {
         id: 'full_name',
-        accessorKey: 'full_name',
         header: 'ФИО',
         size: 200,
-        cell: ({ row }) => row.original.full_name,
+        cell: ({ row }) => fullName(row.original),
       },
       {
-        id: 'position',
-        accessorKey: 'position',
+        id: 'headline',
+        accessorKey: 'headline',
         header: 'Должность',
-        size: 180,
-        cell: ({ row }) => row.original.position ?? '—',
+        size: 200,
+        cell: ({ row }) => row.original.headline ?? '—',
       },
       {
         id: 'grade',
@@ -51,8 +54,7 @@ export default function CandidatesPage() {
         accessorKey: 'tags',
         header: 'Теги',
         size: 220,
-        cell: ({ row }) =>
-          (row.original.tags ?? []).join(', ') || '—',
+        cell: ({ row }) => row.original.tags.join(', ') || '—',
       },
     ],
     [],
@@ -100,7 +102,7 @@ export default function CandidatesPage() {
         onOpenChange={(open) => {
           if (!open) setSelected(null)
         }}
-        title={selected?.full_name}
+        title={selected ? fullName(selected) : undefined}
       >
         {selected && <CandidateCard candidate={selected} />}
       </GlassSheet>

@@ -7,13 +7,14 @@ import { Plus } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { GlassSearchField } from '@/shared/ui/GlassSearchField'
 import { GlassSheet } from '@/shared/ui/GlassSheet'
+import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RegistryTable } from '@/widgets/RegistryTable'
 import { fetchVacancies } from '@/entities/vacancy/api'
 import type { Vacancy } from '@/shared/api/types'
 
 const createSchema = z.object({
   title: z.string().min(1, 'Введите название'),
-  department: z.string().optional(),
+  description: z.string().optional(),
 })
 type CreateValues = z.infer<typeof createSchema>
 
@@ -25,19 +26,15 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
   } = useForm<CreateValues>({ resolver: zodResolver(createSchema) })
 
   const onSubmit = (values: CreateValues) => {
+    // G4: POST /api/v1/vacancies
     console.log('create vacancy', values)
     onSubmitted()
   }
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit)}
-      className="flex flex-col gap-3"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-[var(--text-secondary)]">
-          Название
-        </span>
+        <span className="font-medium text-[var(--text-secondary)]">Название</span>
         <input
           {...register('title')}
           className="rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40"
@@ -49,11 +46,10 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
         )}
       </label>
       <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-[var(--text-secondary)]">
-          Подразделение
-        </span>
-        <input
-          {...register('department')}
+        <span className="font-medium text-[var(--text-secondary)]">Описание</span>
+        <textarea
+          {...register('description')}
+          rows={4}
           className="rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40"
         />
       </label>
@@ -70,12 +66,14 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
 function VacancyDetail({ vacancy }: { vacancy: Vacancy }) {
   return (
     <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-      <dt className="text-[var(--text-secondary)]">Подразделение</dt>
-      <dd>{vacancy.department ?? '—'}</dd>
       <dt className="text-[var(--text-secondary)]">Статус</dt>
-      <dd>{vacancy.status ?? '—'}</dd>
-      <dt className="text-[var(--text-secondary)]">Локация</dt>
-      <dd>{vacancy.location ?? '—'}</dd>
+      <dd><StatusBadge status={vacancy.status} /></dd>
+      <dt className="text-[var(--text-secondary)]">Фонд</dt>
+      <dd>{vacancy.headcount}</dd>
+      <dt className="text-[var(--text-secondary)]">Описание</dt>
+      <dd className="col-span-2 whitespace-pre-wrap text-[var(--text-primary)]">
+        {vacancy.description || '—'}
+      </dd>
       <dt className="text-[var(--text-secondary)]">Создана</dt>
       <dd>{vacancy.created_at ?? '—'}</dd>
     </dl>
@@ -93,35 +91,28 @@ export default function VacanciesPage() {
         id: 'title',
         accessorKey: 'title',
         header: 'Вакансия',
-        size: 240,
+        size: 260,
         cell: ({ row }) => row.original.title,
-      },
-      {
-        id: 'department',
-        accessorKey: 'department',
-        header: 'Подразделение',
-        size: 180,
-        cell: ({ row }) => row.original.department ?? '—',
       },
       {
         id: 'status',
         accessorKey: 'status',
         header: 'Статус',
-        size: 120,
-        cell: ({ row }) => row.original.status ?? '—',
+        size: 130,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
-        id: 'location',
-        accessorKey: 'location',
-        header: 'Локация',
-        size: 140,
-        cell: ({ row }) => row.original.location ?? '—',
+        id: 'headcount',
+        accessorKey: 'headcount',
+        header: 'Фонд',
+        size: 90,
+        cell: ({ row }) => row.original.headcount,
       },
       {
         id: 'created_at',
         accessorKey: 'created_at',
         header: 'Создана',
-        size: 140,
+        size: 180,
         cell: ({ row }) => row.original.created_at ?? '—',
       },
     ],

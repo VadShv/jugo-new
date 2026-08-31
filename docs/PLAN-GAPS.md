@@ -22,13 +22,9 @@
 - **Зависимости**: — .
 
 ### G2. Выровнять контракт фронт↔бэк
-- [ ] Сгенерировать TS-типы из OpenAPI: `openapi-typescript` по `/api/v1/openapi.json` → `frontend/src/shared/api/generated.ts`. Добавить скрипт `gen:api` в `package.json`, запускать в CI.
-- [ ] Заменить `shared/api/types.ts` на сгенерированные типы (Candidate: `first_name/last_name/headline/current_company/grade/location/tags`; Vacancy: `title/description/status/headcount/created_at`; Application: `candidate_id/vacancy_id/current_stage_id/status/screening_score/risk_level/origin`).
-- [ ] Обновить колонки реестров под реальные поля:
-  - `CandidatesPage`: ФИО = `last_name + first_name`, Должность = `headline`, грейд, локация, теги.
-  - `VacanciesPage`: Вакансия = `title`, Статус = `status`, Фонд = `headcount`, Создана = `created_at` (убрать department/location).
-  - `ApplicationsPage`: Кандидат = `candidate_id` (или подгрузить имя), Вакансия = `vacancy_id`, Статус = `status` (не `stage`), Обновлено = `updated_at`.
-- [ ] `StatusBadge`/`PipelineStageBar`: перевести на `application.status` (new/in_progress/hired/rejected/withdrawn) + маппинг стадий → канонических фаз.
+- [x] Типы `shared/api/types.ts` выровнены вручную под схемы бэкенда (Candidate first_name/last_name/headline; Vacancy title/description/status/headcount; Application candidate_id/vacancy_id/status). OpenAPI-codegen оставлен на харденинг.
+- [x] Колонки реестров под реальные поля: CandidatesPage (ФИО=last_name+first_name, Должность=headline), VacanciesPage (title/status/headcount/created_at), ApplicationsPage (candidate_id/vacancy_id/status/updated_at).
+- [x] `StatusBadge`/`PipelineStageBar` переведены на `application.status` (new/in_progress/hired/rejected/withdrawn) + fallback; фильтр статусов откликов привязан к `?status=`.
 - **Приёмка**: во всех реестрах реальные данные отображаются без «—» (кроме действительно пустых полей).
 - **Зависимости**: G1 (нужен токен для проверки).
 

@@ -13,11 +13,8 @@ export interface EntityCandidateCardProps {
 export function CandidateCard({ candidate, onClick }: EntityCandidateCardProps) {
   return (
     <CandidateCardUI
-      name={candidate.full_name}
-      role={candidate.position}
-      avatarUrl={candidate.avatar_url}
-      matchScore={candidate.match_score}
-      channels={candidate.channels}
+      name={`${candidate.first_name} ${candidate.last_name}`}
+      role={candidate.headline ?? undefined}
       onClick={onClick}
     />
   )

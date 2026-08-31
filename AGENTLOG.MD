@@ -41,7 +41,7 @@
 | PII AES-GCM, 2FA, API-ключи, OIDC | 🔴 | — |
 | Идемпотентность, rate limit, вебхуки, дедуп | 🔴 | — |
 | Frontend: дизайн-система Liquid Glass | ✅ | `frontend/src/shared/ui/` |
-| Frontend: реестры (vacancies/candidates/applications/analytics) | 🟡 | скелет есть, контракт расходится |
+| Frontend: реестры (vacancies/candidates/applications/analytics) | ✅ | контракт выровнен (G2); поиск/мутации — G3/G4 |
 | Frontend: логин/auth UI | ✅ | `pages/LoginPage.tsx`, `entities/auth/api.ts` |
 | Frontend: мутации (создание/переход) | 🔴 | `console.log` заглушка |
 | Frontend: UI модулей M1–M6 | 🔴 | нет |
@@ -52,9 +52,9 @@
 
 **Аудит завершён (2026-08-31).** Бэкенд — рабочее ядро + 6 модулей (синхронные AI-вызовы). Фронтенд — качественный дизайн-скелет, **но не связан с бэкендом** (нет логина, контракт типов расходится, поиск/мутации/аналитика не привязаны, UI модулей нет).
 
-**P0-G1 готов (2026-08-31).** Логин + хранение токена + guard роутера + обработка 401 + выход. `tsc --noEmit` и `vite build` зелёные.
+**P0-G2 готов (2026-08-31).** Контракт фронт↔бэк выровнен: типы под реальные схемы, колонки реестров используют реальные поля, StatusBadge/PipelineStageBar на `status`, фильтр статусов откликов привязан к `?status=`. `tsc`/`build` зелёные.
 
-**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → **P0-G2** (выровнять контракт фронт↔бэк: типы из OpenAPI, колонки реестров под реальные поля).
+**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → **P0-G3** (поиск → `POST /search/{entity}` вместо `?q=` на list-эндпоинтах).
 
 ---
 
@@ -76,6 +76,7 @@
 | 2026-08-31 | (аудит) | Полный аудит бэк/фронт; выявлены пробелы (см. `docs/PLAN-GAPS.md`). Коммитов нет. |
 | 2026-08-31 | `de41a81` | docs: AGENTLOG.MD + docs/PLAN-GAPS.md (трекинг + подплан). |
 | 2026-08-31 | (G1) | P0-G1: LoginPage + auth api + token storage + route guard + 401 redirect + logout. tsc/build зелёные. |
+| 2026-08-31 | (G2) | P0-G2: типы/колонки/StatusBadge/PipelineStageBar выровнены под бэкенд; фильтр статусов привязан к ?status=. tsc/build зелёные. |
 
 ---
 

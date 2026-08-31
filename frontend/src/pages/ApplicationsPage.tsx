@@ -9,18 +9,22 @@ import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { PipelineStageBar, type PipelineStage } from '@/shared/ui/PipelineStageBar'
 import { RegistryTable } from '@/widgets/RegistryTable'
 import { fetchApplications } from '@/entities/application/api'
-import type { Application, Stage } from '@/shared/api/types'
+import type { Application } from '@/shared/api/types'
 
-const STAGE_OPTIONS: { value: Stage | 'all'; label: string }[] = [
-  { value: 'all', label: 'Все этапы' },
-  { value: 'new', label: 'Новый' },
-  { value: 'screening', label: 'Скрининг' },
-  { value: 'interview', label: 'Интервью' },
-  { value: 'offer', label: 'Оффер' },
-  { value: 'rejected', label: 'Отказ' },
+const STATUS_OPTIONS: { value: string; label: string; accent: string }[] = [
+  { value: 'all', label: 'Все статусы', accent: 'var(--accent-blue)' },
+  { value: 'new', label: 'Новый', accent: 'var(--accent-blue)' },
+  { value: 'in_progress', label: 'В работе', accent: 'var(--accent-purple)' },
+  { value: 'hired', label: 'Нанят', accent: 'var(--accent-green)' },
+  { value: 'rejected', label: 'Отказ', accent: 'var(--accent-red)' },
+  { value: 'withdrawn', label: 'Отозван', accent: 'var(--text-tertiary)' },
 ]
 
-function StageFilter({
+function shortId(id: string): string {
+  return id.length > 8 ? `${id.slice(0, 8)}…` : id
+}
+
+function StatusFilter({
   value,
   onChange,
 }: {
@@ -30,7 +34,7 @@ function StageFilter({
   return (
     <Select.Root value={value} onValueChange={onChange}>
       <Select.Trigger className="inline-flex items-center gap-1 rounded-pill border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm text-[var(--text-secondary)] outline-none">
-        <Select.Value placeholder="Все этапы" />
+        <Select.Value placeholder="Все статусы" />
         <Select.Icon>
           <ChevronDown size={14} />
         </Select.Icon>
@@ -42,7 +46,7 @@ function StageFilter({
           className="glass glass--regular z-50 rounded-md p-1"
         >
           <Select.Viewport>
-            {STAGE_OPTIONS.map((option) => (
+            {STATUS_OPTIONS.map((option) => (
               <Select.Item
                 key={option.value}
                 value={option.value}
@@ -62,17 +66,29 @@ function ApplicationDetail({ application }: { application: Application }) {
   return (
     <div className="flex flex-col gap-3 text-sm">
       <div className="flex items-center justify-between">
-        <span className="text-[var(--text-secondary)]">Этап</span>
-        <StatusBadge stage={application.stage} />
+        <span className="text-[var(--text-secondary)]">Статус</span>
+        <StatusBadge status={application.status} />
       </div>
       <div className="flex items-center justify-between">
         <span className="text-[var(--text-secondary)]">Кандидат</span>
-        <span>{application.candidate_name ?? application.candidate_id}</span>
+        <span className="font-mono text-xs">{application.candidate_id}</span>
       </div>
       <div className="flex items-center justify-between">
         <span className="text-[var(--text-secondary)]">Вакансия</span>
-        <span>{application.vacancy_title ?? application.vacancy_id}</span>
+        <span className="font-mono text-xs">{application.vacancy_id}</span>
       </div>
+      {application.screening_score != null && (
+        <div className="flex items-center justify-between">
+          <span className="text-[var(--text-secondary)]">Скрининг</span>
+          <span>{Math.round(application.screening_score * 100)}%</span>
+        </div>
+      )}
+      {application.risk_level && (
+        <div className="flex items-center justify-between">
+          <span className="text-[var(--text-secondary)]">Риск</span>
+          <StatusBadge status={application.risk_level} />
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <span className="text-[var(--text-secondary)]">Обновлено</span>
         <span>{application.updated_at ?? '—'}</span>
@@ -83,37 +99,41 @@ function ApplicationDetail({ application }: { application: Application }) {
 
 export default function ApplicationsPage() {
   const [search, setSearch] = useState('')
-  const [stageFilter, setStageFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
   const [selected, setSelected] = useState<Application | null>(null)
 
   const columns = useMemo<ColumnDef<Application>[]>(
     () => [
       {
-        id: 'candidate_name',
-        accessorKey: 'candidate_name',
+        id: 'candidate_id',
+        accessorKey: 'candidate_id',
         header: 'Кандидат',
-        size: 200,
-        cell: ({ row }) => row.original.candidate_name ?? '—',
+        size: 140,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">{shortId(row.original.candidate_id)}</span>
+        ),
       },
       {
-        id: 'vacancy_title',
-        accessorKey: 'vacancy_title',
+        id: 'vacancy_id',
+        accessorKey: 'vacancy_id',
         header: 'Вакансия',
-        size: 200,
-        cell: ({ row }) => row.original.vacancy_title ?? '—',
+        size: 140,
+        cell: ({ row }) => (
+          <span className="font-mono text-xs">{shortId(row.original.vacancy_id)}</span>
+        ),
       },
       {
-        id: 'stage',
-        accessorKey: 'stage',
-        header: 'Этап',
-        size: 120,
-        cell: ({ row }) => <StatusBadge stage={row.original.stage} />,
+        id: 'status',
+        accessorKey: 'status',
+        header: 'Статус',
+        size: 130,
+        cell: ({ row }) => <StatusBadge status={row.original.status} />,
       },
       {
         id: 'updated_at',
         accessorKey: 'updated_at',
         header: 'Обновлено',
-        size: 140,
+        size: 180,
         cell: ({ row }) => row.original.updated_at ?? '—',
       },
     ],
@@ -121,23 +141,28 @@ export default function ApplicationsPage() {
   )
 
   const renderHeader = (items: Application[]): ReactNode => {
-    const counts: Record<Stage, number> = {
-      new: 0,
-      screening: 0,
-      interview: 0,
-      offer: 0,
-      rejected: 0,
-    }
-    for (const item of items) counts[item.stage] += 1
-    const stages: PipelineStage[] = [
-      { id: 'new', label: 'Новый', count: counts.new, accent: 'var(--accent-blue)' },
-      { id: 'screening', label: 'Скрининг', count: counts.screening, accent: 'var(--accent-orange)' },
-      { id: 'interview', label: 'Интервью', count: counts.interview, accent: 'var(--accent-purple)' },
-      { id: 'offer', label: 'Оффер', count: counts.offer, accent: 'var(--accent-green)' },
-      { id: 'rejected', label: 'Отказ', count: counts.rejected, accent: 'var(--accent-red)' },
-    ]
+    const counts: Record<string, number> = {}
+    for (const item of items) counts[item.status] = (counts[item.status] ?? 0) + 1
+    const stages: PipelineStage[] = STATUS_OPTIONS.filter((o) => o.value !== 'all').map(
+      (o) => ({
+        id: o.value,
+        label: o.label,
+        count: counts[o.value] ?? 0,
+        accent: o.accent,
+      }),
+    )
     return <PipelineStageBar stages={stages} />
   }
+
+  const fetchPage = (args: {
+    cursor?: string
+    search?: string
+    signal?: AbortSignal
+  }) =>
+    fetchApplications({
+      ...args,
+      status: statusFilter === 'all' ? undefined : statusFilter,
+    })
 
   return (
     <div className="flex flex-col gap-3">
@@ -151,15 +176,15 @@ export default function ApplicationsPage() {
               onChange={setSearch}
               placeholder="Поиск откликов"
             />
-            <StageFilter value={stageFilter} onChange={setStageFilter} />
+            <StatusFilter value={statusFilter} onChange={setStatusFilter} />
           </>
         }
       />
 
       <RegistryTable
         columns={columns}
-        fetchPage={fetchApplications}
-        queryKeyPrefix={['applications']}
+        fetchPage={fetchPage}
+        queryKeyPrefix={['applications', statusFilter]}
         search={search}
         onRowClick={setSelected}
         renderHeader={renderHeader}
@@ -170,7 +195,7 @@ export default function ApplicationsPage() {
         onOpenChange={(open) => {
           if (!open) setSelected(null)
         }}
-        title={selected?.candidate_name ?? 'Отклик'}
+        title="Отклик"
       >
         {selected && <ApplicationDetail application={selected} />}
       </GlassSheet>

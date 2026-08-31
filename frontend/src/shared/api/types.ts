@@ -1,38 +1,51 @@
-export type Stage = 'new' | 'screening' | 'interview' | 'offer' | 'rejected'
-
-export type Channel = 'email' | 'telegram' | 'phone' | 'whatsapp'
-
-export type VacancyStatus = 'draft' | 'open' | 'paused' | 'closed'
+/** Application status (backend ApplicationOut.status). */
+export type ApplicationStatus =
+  | 'new'
+  | 'in_progress'
+  | 'hired'
+  | 'rejected'
+  | 'withdrawn'
 
 export interface Candidate {
   id: string
-  full_name: string
-  position?: string
-  grade?: string
-  location?: string
-  tags?: string[]
-  avatar_url?: string
-  match_score?: number
-  channels?: Channel[]
+  tenant_id: string
+  first_name: string
+  last_name: string
+  headline?: string | null
+  current_company?: string | null
+  grade?: string | null
+  location?: string | null
+  tags: string[]
+  is_blacklisted: boolean
+  created_at: string
+  updated_at: string
 }
 
 export interface Vacancy {
   id: string
+  tenant_id: string
   title: string
-  department?: string
-  status?: VacancyStatus
-  location?: string
-  created_at?: string
+  description?: string | null
+  status: string
+  headcount: number
+  recruiter_id?: string | null
+  hiring_manager_id?: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface Application {
   id: string
+  tenant_id: string
   candidate_id: string
-  candidate_name?: string
   vacancy_id: string
-  vacancy_title?: string
-  stage: Stage
-  updated_at?: string
+  current_stage_id?: string | null
+  origin: string
+  status: string
+  screening_score?: number | null
+  risk_level?: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface Page<T> {

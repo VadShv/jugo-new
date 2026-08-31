@@ -1,6 +1,5 @@
 import * as Tooltip from '@radix-ui/react-tooltip'
 import { Mail, Phone, Send, MessageCircle, type LucideIcon } from 'lucide-react'
-import type { Stage } from '@/shared/api/types'
 import { StatusBadge } from './StatusBadge'
 import { cn } from './cn'
 
@@ -10,7 +9,7 @@ export interface CandidateCardProps {
   name: string
   role?: string
   avatarUrl?: string
-  status?: Stage
+  status?: string
   matchScore?: number
   channels?: CardChannel[]
   onClick?: () => void
@@ -147,7 +146,7 @@ export function CandidateCard({
         )}
       </div>
 
-      {status != null && <StatusBadge stage={status} />}
+      {status != null && <StatusBadge status={status} />}
 
       {channels != null && channels.length > 0 && (
         <div className="flex shrink-0 items-center gap-1 text-[var(--text-tertiary)]">
