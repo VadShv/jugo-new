@@ -6,6 +6,7 @@ import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { DetailLayout, type DetailTab } from '@/widgets/DetailLayout'
 import { M1ScreeningPanel } from '@/widgets/M1ScreeningPanel'
+import { M2RiskPanel } from '@/widgets/M2RiskPanel'
 import { fetchCandidate } from '@/entities/candidate/api'
 import { fetchApplications } from '@/entities/application/api'
 import { uploadResume } from '@/entities/resumes/api'
@@ -126,6 +127,7 @@ export default function CandidateDetailPage() {
     { value: 'resume', label: 'Резюме', content: <ResumeTab candidateId={candidateId} /> },
     { value: 'applications', label: 'Отклики', content: <ApplicationsTab candidateId={candidateId} /> },
     { value: 'screening', label: 'Оценка', content: <M1ScreeningPanel candidateId={candidateId} /> },
+    { value: 'risk', label: 'Риски', content: <M2RiskPanel candidateId={candidateId} /> },
   ]
 
   return (

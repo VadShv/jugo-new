@@ -140,3 +140,27 @@ export interface ScreeningResultOut {
   created_at: string
   updated_at: string
 }
+
+export interface RiskSignal {
+  code: string
+  severity: string
+  confidence: number
+  evidence?: string | null
+  alternative_explanation?: string | null
+  verification_question?: string | null
+}
+
+export interface RiskReportOut {
+  id: string
+  application_id: string
+  candidate_id: string
+  vacancy_id: string
+  risk_level?: string | null
+  signals: RiskSignal[]
+  top_risks: string[]
+  summary?: string | null
+  model?: string | null
+  status: string
+  created_at: string
+  updated_at: string
+}

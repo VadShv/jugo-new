@@ -15,6 +15,9 @@ const STATUS_META: Record<string, { label: string; accent: string }> = {
   paused: { label: 'Пауза', accent: 'var(--accent-orange)' },
   closed: { label: 'Закрыта', accent: 'var(--text-tertiary)' },
   on_hold: { label: 'On hold', accent: 'var(--accent-orange)' },
+  low: { label: 'Низкий', accent: 'var(--accent-green)' },
+  medium: { label: 'Средний', accent: 'var(--accent-orange)' },
+  high: { label: 'Высокий', accent: 'var(--accent-red)' },
 }
 
 const badge = cva(

@@ -60,7 +60,9 @@
 
 **P2-G10.2 готов (2026-09-01).** M1-панель на вкладке «Оценка» кандидата: селектор отклика → «Сгенерировать критерии» (POST→202+опрос GET) + «Запустить скрининг» (POST→202+опрос) → таблица критерий/балл/доказательство/цитата + total/recommendation/confidence (whitebox). Бэкенд: `GET /screening/vacancies/{id}/requirements`. `tsc`/`build` + `pytest`(31) зелёные.
 
-**⏭️ Следующий шаг**: `docs/FRONTEND-UI.md` → **G10.3** (M2-панель: анализ рисков run+poll + signals + бейдж risk_level).
+**P2-G10.3 готов (2026-09-01).** M2-панель на вкладке «Риски» кандидата: селектор отклика → «Анализ рисков» (POST→202+опрос GET) → бейдж risk_level + top_risks + summary + signals (code/severity/evidence/alternative_explanation/verification_question). StatusBadge расширен (low/medium/high). `tsc`/`build` зелёные.
+
+**⏭️ Следующий шаг**: `docs/FRONTEND-UI.md` → **G10.4** (M3-панель: генерация вопросов run+poll + карточки STAR/CARE + утверждение).
 
 ---
 
@@ -91,6 +93,7 @@
 | 2026-09-01 | `2e7c762` | docs: фиксация статуса + переприоритизация на UI (G10); docs/FRONTEND-UI.md (дизайн фронта). |
 | 2026-09-01 | (G10.1) | P2-G10.1: детальная страница кандидата + DetailLayout/useAiJob/AIResultPanel; реестр→navigate; upload резюме. tsc/build зелёные. |
 | 2026-09-01 | (G10.2) | P2-G10.2: M1-панель (Оценка) — критерии+скрининг run+poll+таблица; бэкенд GET /screening/vacancies/{id}/requirements. tsc/build + pytest(31) зелёные. |
+| 2026-09-01 | (G10.3) | P2-G10.3: M2-панель (Риски) — анализ рисков run+poll+signals+бейдж. tsc/build зелёные. |
 
 ---
 
