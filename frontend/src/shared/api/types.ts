@@ -164,3 +164,29 @@ export interface RiskReportOut {
   created_at: string
   updated_at: string
 }
+
+export interface QuestionCard {
+  block: string
+  question: string
+  probes: string[]
+  listen_for: string[]
+  red_flags: string[]
+  source_quote?: string | null
+  indicator?: string | null
+  valid: boolean
+  validation_issues: string[]
+}
+
+export interface QuestionSetOut {
+  id: string
+  vacancy_id: string
+  application_id?: string | null
+  version_no: number
+  status: string
+  origin: string
+  manual_edited: boolean
+  questions: QuestionCard[]
+  model?: string | null
+  created_at: string
+  updated_at: string
+}
