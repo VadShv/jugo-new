@@ -23,9 +23,9 @@ const NAV: NavSection[] = [
   {
     section: 'Реестры',
     items: [
-      { to: '/vacancies', label: 'Вакансии', icon: Briefcase },
-      { to: '/candidates', label: 'Кандидаты', icon: Users },
       { to: '/applications', label: 'Отклики', icon: ClipboardList },
+      { to: '/candidates', label: 'Кандидаты', icon: Users },
+      { to: '/vacancies', label: 'Вакансии', icon: Briefcase },
     ],
   },
   {

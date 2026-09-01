@@ -16,7 +16,9 @@ import {
   fetchCandidates,
   searchCandidates,
 } from '@/entities/candidate/api'
+import { fetchApplications } from '@/entities/application/api'
 import { useUiStore } from '@/app/store'
+import { VacancySelector } from '@/widgets/VacancySelector'
 import { ApiError } from '@/shared/api/client'
 import type { Candidate } from '@/shared/api/types'
 
@@ -130,6 +132,7 @@ export default function CandidatesPage() {
   const navigate = useNavigate()
   const savedView = useUiStore((state) => state.savedView)
   const setSavedView = useUiStore((state) => state.setSavedView)
+  const vacancyId = useUiStore((s) => s.selectedVacancyId)
 
   const columns = useMemo<ColumnDef<Candidate>[]>(
     () => [
@@ -142,10 +145,26 @@ export default function CandidatesPage() {
     [],
   )
 
-  const fetchPage = (args: { cursor?: string; search?: string; signal?: AbortSignal }) =>
-    args.search
-      ? searchCandidates({ q: args.search, cursor: args.cursor, signal: args.signal })
-      : fetchCandidates(args)
+  const fetchPage = async (args: {
+    cursor?: string
+    search?: string
+    signal?: AbortSignal
+  }) => {
+    if (args.search) {
+      return searchCandidates({ q: args.search, cursor: args.cursor, signal: args.signal })
+    }
+    if (vacancyId) {
+      const apps = await fetchApplications({ vacancyId, signal: args.signal })
+      const candidateIds = new Set(apps.items.map((a) => a.candidate_id))
+      const all = await fetchCandidates({ signal: args.signal })
+      return {
+        items: all.items.filter((c) => candidateIds.has(c.id)),
+        next_cursor: null,
+        has_more: false,
+      }
+    }
+    return fetchCandidates(args)
+  }
 
   return (
     <div className="flex flex-col gap-3">
@@ -154,6 +173,7 @@ export default function CandidatesPage() {
         sticky={false}
         trailing={
           <>
+            <VacancySelector />
             <GlassSearchField value={search} onChange={setSearch} placeholder="Поиск кандидатов" />
             <button
               type="button"
@@ -182,7 +202,7 @@ export default function CandidatesPage() {
       <RegistryTable
         columns={columns}
         fetchPage={fetchPage}
-        queryKeyPrefix={['candidates']}
+        queryKeyPrefix={['candidates', vacancyId ?? 'all']}
         search={search}
         onRowClick={(c) =>
           navigate({ to: '/candidates/$candidateId', params: { candidateId: c.id } })

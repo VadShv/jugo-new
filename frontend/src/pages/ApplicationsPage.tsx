@@ -20,6 +20,8 @@ import { fetchVacancies } from '@/entities/vacancy/api'
 import { useDefaultStages } from '@/entities/funnel/api'
 import { fieldClass } from '@/shared/ui/field'
 import { ApiError } from '@/shared/api/client'
+import { useUiStore } from '@/app/store'
+import { VacancySelector } from '@/widgets/VacancySelector'
 import type { Application, Candidate, Vacancy } from '@/shared/api/types'
 
 const STATUS_OPTIONS: { value: string; label: string; accent: string }[] = [
@@ -165,6 +167,7 @@ export default function ApplicationsPage() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [createOpen, setCreateOpen] = useState(false)
   const navigate = useNavigate()
+  const vacancyId = useUiStore((s) => s.selectedVacancyId)
 
   const columns = useMemo<ColumnDef<Application>[]>(
     () => [
@@ -191,12 +194,16 @@ export default function ApplicationsPage() {
           q: args.search,
           cursor: args.cursor,
           signal: args.signal,
-          filters: statusFilter !== 'all' ? { status: statusFilter } : {},
+          filters: {
+            ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
+            ...(vacancyId ? { vacancy_id: vacancyId } : {}),
+          },
         })
       : fetchApplications({
           cursor: args.cursor,
           signal: args.signal,
           status: statusFilter === 'all' ? undefined : statusFilter,
+          vacancyId: vacancyId ?? undefined,
         })
 
   return (
@@ -206,6 +213,7 @@ export default function ApplicationsPage() {
         sticky={false}
         trailing={
           <>
+            <VacancySelector />
             <GlassSearchField value={search} onChange={setSearch} placeholder="Поиск откликов" />
             <StatusFilter value={statusFilter} onChange={setStatusFilter} />
             <button
@@ -222,7 +230,7 @@ export default function ApplicationsPage() {
       <RegistryTable
         columns={columns}
         fetchPage={fetchPage}
-        queryKeyPrefix={['applications', statusFilter]}
+        queryKeyPrefix={['applications', statusFilter, vacancyId ?? 'all']}
         search={search}
         onRowClick={(a) =>
           navigate({ to: '/applications/$applicationId', params: { applicationId: a.id } })

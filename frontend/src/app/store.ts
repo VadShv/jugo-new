@@ -13,6 +13,10 @@ export interface UiState {
   closeDrawer: () => void
   savedView: string | null
   setSavedView: (view: string | null) => void
+  selectedVacancyId: string | null
+  selectedVacancyTitle: string | null
+  setSelectedVacancy: (id: string, title: string) => void
+  clearSelectedVacancy: () => void
 }
 
 export const useUiStore = create<UiState>((set) => ({
@@ -21,4 +25,10 @@ export const useUiStore = create<UiState>((set) => ({
   closeDrawer: () => set({ activeDrawer: null }),
   savedView: null,
   setSavedView: (view) => set({ savedView: view }),
+  selectedVacancyId: null,
+  selectedVacancyTitle: null,
+  setSelectedVacancy: (id, title) =>
+    set({ selectedVacancyId: id, selectedVacancyTitle: title }),
+  clearSelectedVacancy: () =>
+    set({ selectedVacancyId: null, selectedVacancyTitle: null }),
 }))

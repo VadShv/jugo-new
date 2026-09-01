@@ -5,13 +5,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useNavigate } from '@tanstack/react-router'
-import { Plus } from 'lucide-react'
+import { ChevronRight, Plus } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { GlassSearchField } from '@/shared/ui/GlassSearchField'
 import { GlassSheet } from '@/shared/ui/GlassSheet'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RegistryTable } from '@/widgets/RegistryTable'
 import { useToast } from '@/widgets/Toaster'
+import { useUiStore } from '@/app/store'
 import {
   createVacancy,
   fetchVacancies,
@@ -80,6 +81,7 @@ export default function VacanciesPage() {
   const [search, setSearch] = useState('')
   const [createOpen, setCreateOpen] = useState(false)
   const navigate = useNavigate()
+  const setSelectedVacancy = useUiStore((s) => s.setSelectedVacancy)
 
   const columns = useMemo<ColumnDef<Vacancy>[]>(
     () => [
@@ -87,6 +89,23 @@ export default function VacanciesPage() {
       { id: 'status', accessorKey: 'status', header: 'Статус', size: 130, cell: ({ row }) => <StatusBadge status={row.original.status} /> },
       { id: 'headcount', accessorKey: 'headcount', header: 'Фонд', size: 90, cell: ({ row }) => row.original.headcount },
       { id: 'created_at', accessorKey: 'created_at', header: 'Создана', size: 180, cell: ({ row }) => row.original.created_at ?? '—' },
+      {
+        id: 'detail',
+        header: '',
+        size: 50,
+        cell: ({ row }) => (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigate({ to: '/vacancies/$vacancyId', params: { vacancyId: row.original.id } })
+            }}
+            className="text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
+          >
+            <ChevronRight size={16} />
+          </button>
+        ),
+      },
     ],
     [],
   )
@@ -120,9 +139,10 @@ export default function VacanciesPage() {
         fetchPage={fetchPage}
         queryKeyPrefix={['vacancies']}
         search={search}
-        onRowClick={(v) =>
-          navigate({ to: '/vacancies/$vacancyId', params: { vacancyId: v.id } })
-        }
+        onRowClick={(v) => {
+          setSelectedVacancy(v.id, v.title)
+          navigate({ to: '/applications' })
+        }}
       />
 
       <GlassSheet open={createOpen} onOpenChange={setCreateOpen} title="Новая вакансия">
