@@ -33,7 +33,7 @@
 | M4 Карта поиска | ✅ | `modules/m4_searchmap/` |
 | M5 Аналитика | ✅ | `modules/m5_analytics/` |
 | M6 Планировщик | ✅ | `modules/m6_scheduler/` |
-| EventBus (outbox→Streams+SSE) | 🔴 | `platform/eventbus.py` (no-op) |
+| EventBus (outbox→Streams+SSE) | ✅ | relay (lifespan) + SSE /events/stream (G6); консьюмеры модулей — G7 |
 | Воркеры (arq) | 🔴 | `jobs/` отсутствует |
 | Резюме: text extraction | ✅ | `resumes/service.py` |
 | Резюме: эмбеддинги + LLM-структурирование | 🔴 | — |
@@ -54,9 +54,9 @@
 
 **P0-G5 готов (2026-08-31).** Аналитика привязана к реальному API (`/analytics/funnel/{vacancy_id}`, `/sources`, `/ai`, `/recruiters`): селектор вакансии, KPI, bar по статусам, таблицы. E2E: воронка `total=1, in_progress=1`.
 
-**🎉 Гейт P0 пройден**: фронтенд полностью работает против бэкенда — логин → реестры → поиск → создание → переход → аналитика.
+**P1-G6 готов (2026-08-31).** EventBus: outbox-relay (FOR UPDATE SKIP LOCKED → Redis `XADD` в `jugo:events` → `relayed_at`) запускается через lifespan; SSE `GET /api/v1/events/stream` (heartbeat, Last-Event-ID, фильтр по tenant, токен через `?token=`). Миграция 0007. `ruff`/`mypy`/`pytest`(31) зелёные.
 
-**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → фаза **P1-G6** (EventBus: outbox-relay → Redis Streams + SSE).
+**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → **P1-G7** (arq-воркер: асинхронные AI-задачи + перенос синхронных вызовов в очередь).
 
 ---
 
@@ -82,6 +82,7 @@
 | 2026-08-31 | (G3) | P0-G3: поиск → POST /search/{entity}; реестры ветвят list/search. E2E q=Python → Иван Петров. tsc/build зелёные. |
 | 2026-08-31 | (G4) | P0-G4: мутации (создание вакансии/кандидата/отклика + переход); бэкенд GET /funnel/presets/{id}/stages. tsc/build + pytest(30) зелёные. |
 | 2026-08-31 | (G5) | P0-G5: аналитика → реальный API /analytics/* (воронка/источники/ИИ/рекрутёры). 🎉 Гейт P0 пройден. tsc/build зелёные. |
+| 2026-08-31 | (G6) | P1-G6: EventBus — outbox-relay → Redis Streams + SSE /events/stream; миграция 0007. ruff/mypy/pytest(31) зелёные. |
 
 ---
 

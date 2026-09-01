@@ -53,10 +53,10 @@
 ## P1 — доработать бэкенд (асинхронность + AI-глубина)
 
 ### G6. EventBus: outbox-relay → Redis Streams + SSE
-- [ ] `platform/eventbus.py`: реальный `EventBusPublisher` (Redis `XADD`), `ConsumerBase` (consumer group + `XREADGROUP`, inbox/дедуп `processed_events`, ретраи, DLQ).
-- [ ] `jobs/outbox_relay.py`: воркер, читающий `outbox_events` (FOR UPDATE SKIP LOCKED) → `XADD` → пометка отправленным.
-- [ ] SSE: `GET /api/v1/events/stream` (heartbeat, Last-Event-ID, фильтр по правам).
-- [ ] Контрактные тесты событий (`contracts/events/v1/*`).
+- [x] `platform/eventbus.py`: реальный `EventBusPublisher` (Redis `XADD`); `ConsumerBase` — базовый класс (consumer groups/XREADGROUP/inbox — в G7 для модульных консьюмеров).
+- [x] `jobs/outbox_relay.py`: воркер, читающий `outbox_events` (FOR UPDATE SKIP LOCKED) → `XADD` в `jugo:events` → пометка `relayed_at`; запускается через lifespan.
+- [x] SSE: `GET /api/v1/events/stream` (heartbeat, Last-Event-ID, фильтр по tenant; токен через `?token=` или Bearer). Миграция 0007 (`outbox_events.relayed_at`).
+- [ ] Контрактные тесты событий (`contracts/events/v1/*`) — позже.
 - **Приёмка**: событие `application.stage.changed` доходит до SSE-клиента.
 
 ### G7. arq-воркер (асинхронные AI-задачи)

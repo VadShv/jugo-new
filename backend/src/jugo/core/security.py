@@ -152,6 +152,23 @@ def require_permission(
     return _checker
 
 
+def principal_from_token(token: str) -> UserPrincipal:
+    claims = decode_jwt(token)
+    try:
+        return UserPrincipal(
+            user_id=uuid.UUID(str(claims["sub"])),
+            tenant_id=uuid.UUID(str(claims["tenant_id"])),
+            role=str(claims.get("role", "viewer")),
+        )
+    except (KeyError, ValueError) as exc:
+        raise ProblemException(
+            status=401,
+            type_="about:blank",
+            title="Invalid token claims",
+            detail=str(exc),
+        ) from exc
+
+
 def issue_token(user_id: uuid.UUID, tenant_id: uuid.UUID, role: str) -> str:
     from datetime import datetime, timedelta
 

@@ -78,9 +78,7 @@ async def list_presets(
     )
 
 
-async def list_stages(
-    session: AsyncSession, preset_id: uuid.UUID
-) -> list[FunnelStageOut]:
+async def list_stages(session: AsyncSession, preset_id: uuid.UUID) -> list[FunnelStageOut]:
     result = await session.execute(
         select(FunnelStage)
         .where(FunnelStage.preset_id == preset_id)

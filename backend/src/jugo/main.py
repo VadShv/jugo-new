@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,6 +15,19 @@ from jugo.core.errors import ProblemException, problem_exception_handler
 from jugo.core.telemetry import configure_logging
 
 
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    from jugo.jobs.outbox_relay import run_outbox_relay
+
+    task = asyncio.create_task(run_outbox_relay())
+    try:
+        yield
+    finally:
+        task.cancel()
+        with suppress(asyncio.CancelledError):
+            await task
+
+
 def create_app() -> FastAPI:
     settings = get_settings()
     configure_logging(env=settings.app_env)
@@ -20,6 +36,7 @@ def create_app() -> FastAPI:
         version="0.1.0",
         docs_url="/docs",
         openapi_url="/api/v1/openapi.json",
+        lifespan=lifespan,
     )
     app.add_middleware(
         CORSMiddleware,

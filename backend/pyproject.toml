@@ -92,6 +92,7 @@ module = [
     "docx.*",
     "pgvector.*",
     "structlog.*",
+    "redis.*",
 ]
 ignore_missing_imports = true
 
