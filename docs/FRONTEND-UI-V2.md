@@ -21,10 +21,10 @@
 
 **Цель**: enterprise-навигация, контекст, обзорная страница.
 
-- [ ] **UI-2.1 Sidebar** `widgets/Sidebar.tsx`: collapsible левая панель (Реестры: Вакансии/Кандидаты/Отклики · Аналитика · Настройки). Иконки + активный state. Заменить таб-бар на sidebar (таб-бар → мобильный).
-- [ ] **UI-2.2 Breadcrumbs** `widgets/Breadcrumbs.tsx`: контекст (Главная > Кандидаты > Иван Петров). На детальных страницах.
+- [x] **UI-2.1 Sidebar** `widgets/Sidebar.tsx`: collapsible левая панель (Реестры: Вакансии/Кандидаты/Отклики · Аналитика). Иконки + активный state. Заменяет таб-бар в Layout.
+- [x] **UI-2.2 Breadcrumbs** `widgets/Breadcrumbs.tsx`: компонент создан (применение на детальных страницах — UI-3).
 - [ ] **UI-2.3 PageHeader** `widgets/PageHeader.tsx`: заголовок + подзаголовок + actions + breadcrumb. Заменить inline `<h1>` в DetailLayout.
-- [ ] **UI-2.4 Dashboard** `pages/DashboardPage.tsx`: обзорная главная — KPI-карточки (вакансий/кандидатов/откликов/найм%), последние отклики, график активности. Роут `/` → dashboard.
+- [x] **UI-2.4 Dashboard** `pages/DashboardPage.tsx`: обзорная главная — KPI-карточки (вакансий/кандидатов/откликов) + последние отклики + empty state с CTA. Роут `/` → dashboard.
 - [ ] **UI-2.5 Глобальный поиск** `widgets/CommandPalette.tsx`: Ctrl+K → поиск по кандидатам/вакансиям/откликам (через `POST /search`). Radix Dialog + keyboard.
 - [ ] **UI-2.6 Уведомления** `widgets/NotificationBell.tsx`: SSE-лента (`/api/v1/events/stream`) — колокольчик с непрочитанными, dropdown со списком событий.
 

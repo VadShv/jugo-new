@@ -14,6 +14,7 @@ import ApplicationsPage from '../pages/ApplicationsPage'
 import ApplicationDetailPage from '../pages/ApplicationDetailPage'
 import AnalyticsPage from '../pages/AnalyticsPage'
 import LoginPage from '../pages/LoginPage'
+import DashboardPage from '../pages/DashboardPage'
 
 const rootRoute = createRootRoute({})
 
@@ -22,7 +23,7 @@ const loginRoute = createRoute({
   path: '/login',
   component: LoginPage,
   beforeLoad: () => {
-    if (isAuthenticated()) throw redirect({ to: '/vacancies' })
+    if (isAuthenticated()) throw redirect({ to: '/' })
   },
 })
 
@@ -35,12 +36,10 @@ const protectedRoute = createRoute({
   },
 })
 
-const indexRoute = createRoute({
-  getParentRoute: () => rootRoute,
+const dashboardRoute = createRoute({
+  getParentRoute: () => protectedRoute,
   path: '/',
-  beforeLoad: () => {
-    throw redirect({ to: isAuthenticated() ? '/vacancies' : '/login' })
-  },
+  component: DashboardPage,
 })
 
 const vacanciesRoute = createRoute({
@@ -86,9 +85,9 @@ const analyticsRoute = createRoute({
 })
 
 const routeTree = rootRoute.addChildren([
-  indexRoute,
   loginRoute,
   protectedRoute.addChildren([
+    dashboardRoute,
     vacanciesRoute,
     vacancyDetailRoute,
     candidatesRoute,
