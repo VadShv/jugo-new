@@ -47,6 +47,22 @@ services:
       postgres: { condition: service_healthy }
       redis: { condition: service_started }
     restart: unless-stopped
+  worker:
+    build: { context: ../backend }
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      AI_PROVIDER: ${AI_PROVIDER}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      TEI_URL: ${TEI_URL}
+      EMBEDDING_DIM: ${EMBEDDING_DIM}
+      JWT_SECRET: ${JWT_SECRET}
+      APP_ENV: prod
+    command: ["python", "-m", "arq", "jugo.jobs.worker.WorkerSettings"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      redis: { condition: service_started }
+    restart: unless-stopped
   frontend:
     build: { context: ../frontend }
     restart: unless-stopped

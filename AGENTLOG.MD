@@ -34,7 +34,7 @@
 | M5 Аналитика | ✅ | `modules/m5_analytics/` |
 | M6 Планировщик | ✅ | `modules/m6_scheduler/` |
 | EventBus (outbox→Streams+SSE) | ✅ | relay (lifespan) + SSE /events/stream (G6); консьюмеры модулей — G7 |
-| Воркеры (arq) | 🔴 | `jobs/` отсутствует |
+| Воркеры (arq) | ✅ | `jobs/worker.py` (G7); parse_resume/embed — G8/G9 |
 | Резюме: text extraction | ✅ | `resumes/service.py` |
 | Резюме: эмбеддинги + LLM-структурирование | 🔴 | — |
 | Файлы S3 presigned | ✅ | `files/service.py` |
@@ -54,9 +54,9 @@
 
 **P0-G5 готов (2026-08-31).** Аналитика привязана к реальному API (`/analytics/funnel/{vacancy_id}`, `/sources`, `/ai`, `/recruiters`): селектор вакансии, KPI, bar по статусам, таблицы. E2E: воронка `total=1, in_progress=1`.
 
-**P1-G6 готов (2026-08-31).** EventBus: outbox-relay (FOR UPDATE SKIP LOCKED → Redis `XADD` в `jugo:events` → `relayed_at`) запускается через lifespan; SSE `GET /api/v1/events/stream` (heartbeat, Last-Event-ID, фильтр по tenant, токен через `?token=`). Миграция 0007. `ruff`/`mypy`/`pytest`(31) зелёные.
+**P1-G7 готов (2026-09-01).** arq-воркер: `jobs/queue.py` (enqueue) + `jobs/worker.py` (WorkerSettings с 5 AI-функциями). Эндпоинты M1–M4 `:run`/`:generate` → `202 {job_id}` + enqueue; результат через GET (опрос). Сервис `worker` в compose. `ruff`/`mypy`/`pytest`(31) зелёные.
 
-**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → **P1-G7** (arq-воркер: асинхронные AI-задачи + перенос синхронных вызовов в очередь).
+**⏭️ Следующий шаг**: `docs/PLAN-GAPS.md` → **P1-G8** (эмбеддинги TEI в потоке резюме + семантический поиск pgvector HNSW + RRF).
 
 ---
 
@@ -83,6 +83,7 @@
 | 2026-08-31 | (G4) | P0-G4: мутации (создание вакансии/кандидата/отклика + переход); бэкенд GET /funnel/presets/{id}/stages. tsc/build + pytest(30) зелёные. |
 | 2026-08-31 | (G5) | P0-G5: аналитика → реальный API /analytics/* (воронка/источники/ИИ/рекрутёры). 🎉 Гейт P0 пройден. tsc/build зелёные. |
 | 2026-08-31 | (G6) | P1-G6: EventBus — outbox-relay → Redis Streams + SSE /events/stream; миграция 0007. ruff/mypy/pytest(31) зелёные. |
+| 2026-09-01 | (G7) | P1-G7: arq-воркер (5 AI-функций) + enqueue; M1–M4 :run/:generate → 202 + enqueue; сервис worker в compose. ruff/mypy/pytest(31) зелёные. |
 
 ---
 

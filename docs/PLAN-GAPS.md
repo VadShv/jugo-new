@@ -60,9 +60,9 @@
 - **Приёмка**: событие `application.stage.changed` доходит до SSE-клиента.
 
 ### G7. arq-воркер (асинхронные AI-задачи)
-- [ ] `jobs/worker.py`: arq `WorkerSettings` с пулами ai/index/webhooks/analytics/scheduler.
-- [ ] Хендлеры: `parse_resume`, `embed_candidate`, `screen_application`, `risk_analyze` (вынести синхронные вызовы из HTTP в очередь).
-- [ ] Эндпоинты M1–M4: `POST ...:run` → `202 {ai_run_id}` + enqueue; результат через опрос/SSE.
+- [x] `jobs/worker.py`: arq `WorkerSettings` с AI-функциями (generate_requirements, screen_application, analyze_risk, generate_questions, generate_search_map); единый пул (разделение пулов ai/index/webhooks/analytics/scheduler — позже). `jobs/queue.py` (enqueue). Сервис `worker` в compose.deploy.yml.
+- [x] Хендлеры M1–M4 вынесены из HTTP в очередь (открывают сессию, set_tenant_context, вызывают сервис, commit/rollback). `parse_resume`/`embed_candidate` — G8/G9.
+- [x] Эндпоинты M1–M4: `POST ...:run`/`:generate` → `202 {job_id}` + enqueue; результат через GET (опрос).
 - **Приёмка**: скрининг идёт в воркере, API не блокируется.
 - **Зависимости**: G6.
 

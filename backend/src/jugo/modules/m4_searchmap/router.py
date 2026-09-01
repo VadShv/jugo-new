@@ -6,22 +6,32 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from jugo.core.db import get_session
+from jugo.core.errors import ProblemException
 from jugo.core.rls import apply_rls
+from jugo.core.schemas import JobAccepted
 from jugo.core.security import UserPrincipal, require_permission
+from jugo.jobs.queue import enqueue
 from jugo.modules.m4_searchmap import service
 from jugo.modules.m4_searchmap.schemas import SearchMapOut
 
 router = APIRouter(prefix="/search-map", tags=["m4_searchmap"])
 
 
-@router.post("/vacancies/{vacancy_id}:generate", response_model=SearchMapOut)
+@router.post("/vacancies/{vacancy_id}:generate", response_model=JobAccepted, status_code=202)
 async def generate_search_map(
     vacancy_id: uuid.UUID,
-    session: AsyncSession = Depends(get_session),
     user: UserPrincipal = Depends(require_permission("searchmap:run")),
-) -> SearchMapOut:
-    await apply_rls(session, user)
-    return await service.generate(session, vacancy_id, user.user_id)
+) -> JobAccepted:
+    try:
+        job = await enqueue(
+            "generate_search_map",
+            str(vacancy_id),
+            str(user.tenant_id),
+            str(user.user_id),
+        )
+    except Exception as exc:
+        raise ProblemException(503, "about:blank", "Queue unavailable", detail=str(exc)) from exc
+    return JobAccepted(job_id=job.job_id if job else None)
 
 
 @router.get("/vacancies/{vacancy_id}", response_model=SearchMapOut)
