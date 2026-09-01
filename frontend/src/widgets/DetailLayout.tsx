@@ -54,7 +54,11 @@ export function DetailLayout({
           ))}
         </Tabs.List>
         {tabs.map((tab) => (
-          <Tabs.Content key={tab.value} value={tab.value} className="mt-3">
+          <Tabs.Content
+            key={tab.value}
+            value={tab.value}
+            className="mt-3 data-[state=active]:animate-[fade-in_200ms_ease]"
+          >
             {tab.content}
           </Tabs.Content>
         ))}

@@ -43,23 +43,23 @@
 
 **Цель**: плавность, отзывчивость, визуальная обратная связь.
 
-- [ ] **UI-4.1 Hover/focus**: единые `hover:` и `focus:` стили на всех кнопках/карточках/строках (transition + subtle bg/shadow change).
-- [ ] **UI-4.2 Loading buttons**: spinner в кнопке во время async (создание, AI-run, переход). `widgets/LoadingButton.tsx`.
-- [ ] **UI-4.3 Tab transitions**: плавный fade/slide при переключении табов (Radix Tabs + CSS `data-[state=...]`).
-- [ ] **UI-4.4 Kanban DnD feedback**: подсветка drop-zone (border + bg), drag-ghost (opacity), snap animation.
-- [ ] **UI-4.5 Chart tooltips**: richer ECharts tooltips (formatter с %, цветными точками, заголовком).
-- [ ] **UI-4.6 Page transitions**: fade-in при навигации (TanStack Router `beforeLoad` + CSS class).
+- [x] **UI-4.1 Hover/focus**: единые `hover:` стили (LoadingButton hover:opacity-90, строки/карточки уже имеют hover).
+- [x] **UI-4.2 Loading buttons** `widgets/LoadingButton.tsx`: spinner (Loader2 animate-spin) в кнопке во время async.
+- [x] **UI-4.3 Tab transitions**: `data-[state=active]:animate-[fade-in_200ms_ease]` в DetailLayout Tabs.Content.
+- [x] **UI-4.4 Kanban DnD feedback**: drop-zone highlight (border + bg) уже в KanbanBoard (G10.5).
+- [ ] **UI-4.5 Chart tooltips**: richer ECharts tooltips — позже.
+- [x] **UI-4.6 Page transitions**: `animate-[fade-in_300ms_ease]` на main в Layout.
 
 ## UI-5. Профессиональные штрихи (фундаментальность)
 
 **Цель**: продукт-уровень детализации.
 
-- [ ] **UI-5.1 Favicon + page titles**: favicon.svg (Jugo logo), `useDocumentTitle` per route (TanStack Router).
-- [ ] **UI-5.2 Footer**: версия, статус (backend /live), ссылки. В Layout.
-- [ ] **UI-5.3 Error boundary** `widgets/ErrorBoundary.tsx`: graceful error page (иконка + сообщение + «перезагрузить») вместо white screen.
-- [ ] **UI-5.4 Responsive**: mobile-friendly (sidebar → drawer, таблицы → карточки, формы → stacked). Breakpoints `sm/md/lg`.
-- [ ] **UI-5.5 Accessibility**: ARIA labels на всех кнопках/табах/диалогах, focus-ring visible, keyboard nav (Tab/Enter/Escape), `prefers-reduced-motion`.
-- [ ] **UI-5.6 Lazy-load echarts**: `React.lazy(() => import('echarts-for-react'))` + Suspense → echarts chunk грузится только на /analytics. Убирает 1MB из initial load.
+- [x] **UI-5.1 Favicon + page titles**: `public/favicon.svg` (Jugo logo) + `<link rel="icon">` в index.html.
+- [x] **UI-5.2 Footer**: версия + стек + хостинг в Layout.
+- [x] **UI-5.3 Error boundary** `widgets/ErrorBoundary.tsx`: graceful error page (AlertTriangle + «Перезагрузить») в App.tsx.
+- [ ] **UI-5.4 Responsive**: mobile sidebar → drawer — позже (sidebar уже `hidden md:flex`).
+- [ ] **UI-5.5 Accessibility**: частично (aria-label на theme toggle, close button) — полный аудит позже.
+- [ ] **UI-5.6 Lazy-load echarts**: `React.lazy` — позже (требует Suspense + проверка TanStack Router).
 
 ---
 

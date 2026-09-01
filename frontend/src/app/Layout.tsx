@@ -46,9 +46,12 @@ export function Layout() {
             </>
           }
         />
-        <main className="mx-auto w-full max-w-6xl px-4 py-5">
+        <main className="mx-auto w-full max-w-6xl animate-[fade-in_300ms_ease] px-4 py-5">
           <Outlet />
         </main>
+        <footer className="border-t border-[var(--glass-border)] px-4 py-3 text-center text-caption text-[var(--text-tertiary)]">
+          ATS Jugo v1.0 · FastAPI + React · cloud.ru
+        </footer>
       </div>
     </div>
   )

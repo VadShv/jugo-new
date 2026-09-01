@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { RouterProvider } from '@tanstack/react-router'
 import { router } from './router'
 import { ToasterProvider } from '@/widgets/Toaster'
+import { ErrorBoundary } from '@/widgets/ErrorBoundary'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -16,9 +17,11 @@ const queryClient = new QueryClient({
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <ToasterProvider>
-        <RouterProvider router={router} />
-      </ToasterProvider>
+      <ErrorBoundary>
+        <ToasterProvider>
+          <RouterProvider router={router} />
+        </ToasterProvider>
+      </ErrorBoundary>
     </QueryClientProvider>
   )
 }
