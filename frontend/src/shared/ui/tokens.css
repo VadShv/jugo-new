@@ -204,3 +204,31 @@ html {
 .row-zebra {
   background-color: color-mix(in srgb, var(--surface-sunken) 60%, transparent);
 }
+
+/* ---------- GlassSheet animations (transform/opacity only) ---------- */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}

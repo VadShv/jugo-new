@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueries } from '@tanstack/react-query'
 import ReactECharts from 'echarts-for-react'
 import type { EChartsOption } from 'echarts'
 import * as Tabs from '@radix-ui/react-tabs'
@@ -19,7 +19,6 @@ const STATUS_LABEL: Record<string, string> = {
   rejected: 'Отказ',
   withdrawn: 'Отозван',
 }
-const STATUS_ORDER = ['new', 'in_progress', 'hired', 'rejected', 'withdrawn']
 
 const selectClass =
   'rounded-pill border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm text-[var(--text-secondary)] outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40'
@@ -48,57 +47,63 @@ export default function AnalyticsPage() {
     queryKey: ['vacancies-select'],
     queryFn: ({ signal }) => fetchVacancies({ signal }),
   })
-  const effectiveVacancyId =
-    vacancyId || vacancies.data?.items[0]?.id || ''
+  const effectiveVacancyId = vacancyId || vacancies.data?.items[0]?.id || ''
   const funnel = useQuery({
     queryKey: ['analytics-funnel', effectiveVacancyId],
     enabled: !!effectiveVacancyId,
-    queryFn: () => fetchFunnel(effectiveVacancyId),
+    queryFn: ({ signal }) => fetchFunnel(effectiveVacancyId, signal),
   })
   const sources = useQuery({
     queryKey: ['analytics-sources'],
-    queryFn: () => fetchSources(),
+    queryFn: ({ signal }) => fetchSources(signal),
   })
   const ai = useQuery({
     queryKey: ['analytics-ai'],
-    queryFn: () => fetchAiStats(),
+    queryFn: ({ signal }) => fetchAiStats(signal),
   })
   const recruiters = useQuery({
     queryKey: ['analytics-recruiters'],
-    queryFn: () => fetchRecruiters(),
+    queryFn: ({ signal }) => fetchRecruiters(signal),
   })
 
-  const funnelBar: EChartsOption = {
-    tooltip: { trigger: 'axis' },
-    xAxis: {
-      type: 'category',
-      data: STATUS_ORDER.map((s) => STATUS_LABEL[s] ?? s),
-    },
-    yAxis: { type: 'value', minInterval: 1 },
+  const funnelOption: EChartsOption = {
+    tooltip: { trigger: 'item', formatter: '{b}: {c}' },
     series: [
       {
-        type: 'bar',
-        data: STATUS_ORDER.map((s) => funnel.data?.by_status[s] ?? 0),
-        itemStyle: { color: 'var(--accent-blue)' },
+        type: 'funnel',
+        left: '10%',
+        right: '10%',
+        top: 16,
+        bottom: 16,
+        minSize: '24%',
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 12 },
+        itemStyle: { borderColor: 'var(--surface-solid)', borderWidth: 1 },
+        data: [
+          { name: STATUS_LABEL.new, value: funnel.data?.by_status.new ?? 0, itemStyle: { color: 'var(--accent-blue)' } },
+          { name: STATUS_LABEL.in_progress, value: funnel.data?.by_status.in_progress ?? 0, itemStyle: { color: 'var(--accent-purple)' } },
+          { name: STATUS_LABEL.hired, value: funnel.data?.by_status.hired ?? 0, itemStyle: { color: 'var(--accent-green)' } },
+        ],
       },
     ],
   }
 
   const sourceBar: EChartsOption = {
     tooltip: { trigger: 'axis' },
-    xAxis: {
-      type: 'category',
-      data: sources.data?.map((s) => s.origin) ?? [],
-    },
+    xAxis: { type: 'category', data: sources.data?.map((s) => s.origin) ?? [] },
     yAxis: { type: 'value', minInterval: 1 },
     series: [
-      {
-        type: 'bar',
-        data: sources.data?.map((s) => s.count) ?? [],
-        itemStyle: { color: 'var(--accent-teal)' },
-      },
+      { type: 'bar', data: sources.data?.map((s) => s.count) ?? [], itemStyle: { color: 'var(--accent-teal)' } },
     ],
   }
+
+  // Portfolio: funnel per vacancy
+  const vacancyItems = vacancies.data?.items ?? []
+  const funnelQueries = useQueries({
+    queries: vacancyItems.map((v) => ({
+      queryKey: ['analytics-funnel', v.id],
+      queryFn: ({ signal }: { signal: AbortSignal }) => fetchFunnel(v.id, signal),
+    })),
+  })
 
   return (
     <div className="flex flex-col gap-3">
@@ -124,6 +129,7 @@ export default function AnalyticsPage() {
         <Tabs.List className="inline-flex gap-1 rounded-pill bg-[var(--surface-sunken)] p-1">
           {[
             ['funnel', 'Воронка'],
+            ['portfolio', 'Портфель'],
             ['sources', 'Источники'],
             ['ai', 'ИИ-операции'],
             ['recruiters', 'Рекрутёры'],
@@ -142,22 +148,48 @@ export default function AnalyticsPage() {
           <div className="rounded-lg border border-[var(--glass-border)] bg-[var(--surface-solid)] p-4 shadow-card">
             <div className="mb-3 grid grid-cols-3 gap-3">
               <Kpi label="Всего откликов" value={String(funnel.data?.total ?? 0)} />
-              <Kpi
-                label="Найм"
-                value={`${Math.round((funnel.data?.hired_rate ?? 0) * 100)}%`}
-              />
-              <Kpi
-                label="Отказ"
-                value={`${Math.round((funnel.data?.reject_rate ?? 0) * 100)}%`}
-              />
+              <Kpi label="Найм" value={`${Math.round((funnel.data?.hired_rate ?? 0) * 100)}%`} />
+              <Kpi label="Отказ" value={`${Math.round((funnel.data?.reject_rate ?? 0) * 100)}%`} />
             </div>
             {funnel.isLoading ? (
               <Empty text="Загрузка…" />
             ) : (funnel.data?.total ?? 0) === 0 ? (
               <Empty text="Нет откликов по вакансии" />
             ) : (
-              <ReactECharts option={funnelBar} style={{ height: 320 }} />
+              <ReactECharts option={funnelOption} style={{ height: 320 }} />
             )}
+          </div>
+        </Tabs.Content>
+
+        <Tabs.Content value="portfolio" className="mt-3">
+          <div className="overflow-auto rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] shadow-card">
+            <table className="w-full text-sm">
+              <thead className="bg-[var(--surface-sunken)] text-left text-xs uppercase tracking-wide text-[var(--text-secondary)]">
+                <tr>
+                  <th className="px-3 py-2">Вакансия</th>
+                  <th className="px-3 py-2">Откликов</th>
+                  <th className="px-3 py-2">Найм</th>
+                  <th className="px-3 py-2">Отказ</th>
+                </tr>
+              </thead>
+              <tbody>
+                {vacancyItems.length === 0 ? (
+                  <tr><td colSpan={4} className="px-3 py-4 text-center text-[var(--text-tertiary)]">Нет вакансий</td></tr>
+                ) : (
+                  vacancyItems.map((v, i) => {
+                    const f = funnelQueries[i]?.data
+                    return (
+                      <tr key={v.id} className="border-t border-[var(--glass-border)]">
+                        <td className="px-3 py-2 font-medium text-[var(--text-primary)]">{v.title}</td>
+                        <td className="px-3 py-2 tabular-nums">{f?.total ?? '…'}</td>
+                        <td className="px-3 py-2 tabular-nums">{f ? `${Math.round(f.hired_rate * 100)}%` : '…'}</td>
+                        <td className="px-3 py-2 tabular-nums">{f ? `${Math.round(f.reject_rate * 100)}%` : '…'}</td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </Tabs.Content>
 
@@ -193,9 +225,7 @@ export default function AnalyticsPage() {
                     <tr key={row.task} className="border-t border-[var(--glass-border)]">
                       <td className="px-3 py-2 font-mono text-xs">{row.task}</td>
                       <td className="px-3 py-2">{row.count}</td>
-                      <td className="px-3 py-2">
-                        {row.avg_latency_ms != null ? Math.round(row.avg_latency_ms) : '—'}
-                      </td>
+                      <td className="px-3 py-2">{row.avg_latency_ms != null ? Math.round(row.avg_latency_ms) : '—'}</td>
                     </tr>
                   ))
                 )}
@@ -221,9 +251,7 @@ export default function AnalyticsPage() {
                 ) : (
                   recruiters.data?.map((row, i) => (
                     <tr key={row.recruiter_id ?? i} className="border-t border-[var(--glass-border)]">
-                      <td className="px-3 py-2 font-mono text-xs">
-                        {row.recruiter_id ?? '—'}
-                      </td>
+                      <td className="px-3 py-2 font-mono text-xs">{row.recruiter_id ?? '—'}</td>
                       <td className="px-3 py-2">{row.count}</td>
                     </tr>
                   ))
