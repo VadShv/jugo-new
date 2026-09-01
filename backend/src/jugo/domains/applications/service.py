@@ -100,6 +100,7 @@ async def update(
         )
     for field, value in data.model_dump(exclude_unset=True).items():
         setattr(application, field, value)
+    application.version += 1
     await session.flush()
     await session.refresh(application)
     return ApplicationOut.model_validate(application)

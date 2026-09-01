@@ -87,4 +87,5 @@ async def transition_application(
         to_stage_id=payload.to_stage_id,
         actor=user.user_id,
         reason=payload.reason,
+        version=payload.version,
     )

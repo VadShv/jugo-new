@@ -240,7 +240,5 @@ async def get_latest_requirements(
     )
     req = result.scalar_one_or_none()
     if req is None:
-        raise ProblemException(
-            404, "about:blank", "Requirements not found", detail=str(vacancy_id)
-        )
+        raise ProblemException(404, "about:blank", "Requirements not found", detail=str(vacancy_id))
     return RequirementSetOut.model_validate(req)

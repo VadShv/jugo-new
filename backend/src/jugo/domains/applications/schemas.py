@@ -14,6 +14,8 @@ class ApplicationCreate(BaseModel):
     status: str = Field(default="new", max_length=32)
     screening_score: float | None = Field(default=None, ge=0.0, le=1.0)
     risk_level: str | None = Field(default=None, max_length=16)
+    owner_id: uuid.UUID | None = None
+    salary_expectation: str | None = None
 
 
 class ApplicationUpdate(BaseModel):
@@ -22,6 +24,9 @@ class ApplicationUpdate(BaseModel):
     status: str | None = Field(default=None, max_length=32)
     screening_score: float | None = Field(default=None, ge=0.0, le=1.0)
     risk_level: str | None = Field(default=None, max_length=16)
+    owner_id: uuid.UUID | None = None
+    salary_expectation: str | None = None
+    next_action_at: datetime | None = None
 
 
 class ApplicationOut(BaseModel):
@@ -36,6 +41,13 @@ class ApplicationOut(BaseModel):
     status: str
     screening_score: float | None = None
     risk_level: str | None = None
+    version: int = 1
+    stage_entered_at: datetime | None = None
+    next_action_at: datetime | None = None
+    owner_id: uuid.UUID | None = None
+    salary_expectation: str | None = None
+    rejection_reason_code: str | None = None
+    rejection_comment: str | None = None
     created_at: datetime
     updated_at: datetime
 

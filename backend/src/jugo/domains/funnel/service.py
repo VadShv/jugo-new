@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from sqlalchemy import select, text
@@ -93,6 +93,7 @@ async def transition(
     to_stage_id: uuid.UUID,
     actor: uuid.UUID,
     reason: str | None = None,
+    version: int | None = None,
 ) -> TransitionResult:
     app_result = await session.execute(select(Application).where(Application.id == application_id))
     app = app_result.scalar_one_or_none()
@@ -102,6 +103,13 @@ async def transition(
             type_="about:blank",
             title="Application not found",
             detail=str(application_id),
+        )
+    if version is not None and app.version != version:
+        raise ProblemException(
+            status=409,
+            type_="about:blank",
+            title="Version conflict",
+            detail=f"Expected version {version}, got {app.version}",
         )
     if app.current_stage_id == to_stage_id:
         raise ProblemException(
@@ -122,15 +130,20 @@ async def transition(
         )
 
     from_stage_id = app.current_stage_id
+    old_version = app.version
     before: dict[str, Any] = {
         "current_stage_id": str(from_stage_id) if from_stage_id else None,
         "status": app.status,
+        "version": old_version,
     }
     app.current_stage_id = to_stage_id
     app.status = _project_status(stage.stage_type)
+    app.stage_entered_at = datetime.now(UTC)
+    app.version = old_version + 1
     after: dict[str, Any] = {
         "current_stage_id": str(to_stage_id),
         "status": app.status,
+        "version": app.version,
     }
 
     transition_result = await session.execute(
@@ -188,4 +201,5 @@ async def transition(
         to_stage_id=to_stage_id,
         status=app.status,
         transition_id=transition_id,
+        version=app.version,
     )

@@ -47,6 +47,7 @@ class FunnelStageOut(BaseModel):
 class TransitionRequest(BaseModel):
     to_stage_id: uuid.UUID
     reason: str | None = None
+    version: int | None = None
 
 
 class TransitionResult(BaseModel):
@@ -55,3 +56,4 @@ class TransitionResult(BaseModel):
     to_stage_id: uuid.UUID
     status: str
     transition_id: uuid.UUID
+    version: int = 1
