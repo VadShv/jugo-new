@@ -9,10 +9,11 @@ import {
 } from '@tanstack/react-table'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import { SlidersHorizontal } from 'lucide-react'
+import { SearchX, SlidersHorizontal } from 'lucide-react'
 import type { Page } from '@/shared/api/types'
 import { cn } from '@/shared/ui/cn'
 import { SkeletonRows } from '@/widgets/Skeleton'
+import { EmptyState } from '@/widgets/EmptyState'
 
 export interface RegistryTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -158,9 +159,11 @@ export function RegistryTable<TData>({
             <SkeletonRows count={8} />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex h-40 items-center justify-center text-sm text-[var(--text-tertiary)]">
-            Ничего не найдено
-          </div>
+          <EmptyState
+            icon={SearchX}
+            title="Ничего не найдено"
+            description="Попробуйте изменить запрос или сбросить фильтры"
+          />
         ) : (
           <div style={{ height: totalSize, position: 'relative' }}>
             {virtualItems.map((virtualRow) => {

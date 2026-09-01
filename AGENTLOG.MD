@@ -115,6 +115,7 @@
 | 2026-09-01 | (G10.7) | P2-G10.7: аналитика (воронка-funnel + портфель) + полировка (анимации/dark mode/code-split 301KB). 🎉 Гейт P2 = v1.0. tsc/build зелёные. |
 | 2026-09-01 | (UI-1) | UI-V2 фаза 1: типографика + глубина поверхностей + Card + Skeleton (shimmer) + Toaster (Radix Toast). Применено к реестрам/формам. tsc/build зелёные. |
 | 2026-09-01 | (UI-2) | UI-V2 фаза 2: Sidebar (enterprise-навигация) + Dashboard (обзорная главная с KPI) + Breadcrumbs. Router: `/` → dashboard. tsc/build зелёные. |
+| 2026-09-01 | (UI-3) | UI-V2 фаза 3: EmptyState (иконка+текст+CTA) + ConfirmDialog (Radix AlertDialog). Применено к RegistryTable. tsc/build зелёные. |
 
 ---
 

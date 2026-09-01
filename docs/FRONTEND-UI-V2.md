@@ -32,10 +32,10 @@
 
 **Цель**: профессиональные таблицы, формы, пустые состояния, диалоги.
 
-- [ ] **UI-3.1 Empty states** `widgets/EmptyState.tsx`: иконка + заголовок + описание + CTA-кнопка. Заменить «Ничего не найдено» / «Нет откликов».
-- [ ] **UI-3.2 Таблицы v2**: header sort (click → sort), row selection (checkbox), pagination UI (стрелки + page info), sticky header, column resize. Обновить `RegistryTable`.
-- [ ] **UI-3.3 Формы v2**: field groups (fieldset + legend), inline validation (иконка + текст под полем), submit feedback (spinner в кнопке). Обновить все формы.
-- [ ] **UI-3.4 Confirm dialog** `widgets/ConfirmDialog.tsx`: Radix AlertDialog для деструктивных действий (отклонить, удалить, отменить интервью).
+- [x] **UI-3.1 Empty states** `widgets/EmptyState.tsx`: иконка + заголовок + описание + CTA. Применено к RegistryTable.
+- [ ] **UI-3.2 Таблицы v2**: header sort, row selection, pagination UI, sticky header, column resize. Обновить `RegistryTable`.
+- [ ] **UI-3.3 Формы v2**: field groups, inline validation, submit feedback. Обновить все формы.
+- [x] **UI-3.4 Confirm dialog** `widgets/ConfirmDialog.tsx`: Radix AlertDialog для деструктивных действий.
 - [ ] **UI-3.5 Copy feedback**: toast «Скопировано» при копировании поисковых строк (M4 паспорта).
 - [ ] **UI-3.6 Badge improvements**: pill-бейджи с dot-индикатором (онлайн/офлайн статус), count-бейджи на табах (количество откликов/скринингов).
 
