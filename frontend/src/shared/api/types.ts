@@ -190,3 +190,39 @@ export interface QuestionSetOut {
   created_at: string
   updated_at: string
 }
+
+export interface Donor {
+  name: string
+  tier: number
+  rationale?: string | null
+}
+
+export interface Hypothesis {
+  text: string
+  rationale?: string | null
+}
+
+export interface QueryPassport {
+  platform: string
+  query: string
+  terms: string[]
+  exclusions: string[]
+  rationale?: string | null
+}
+
+export interface SearchMapOut {
+  id: string
+  vacancy_id: string
+  version_no: number
+  status: string
+  role_ontology?: Record<string, unknown> | null
+  donors: Donor[]
+  hypotheses: Hypothesis[]
+  anti_map: string[]
+  term_pool?: Record<string, unknown> | null
+  query_passports: QueryPassport[]
+  justifications: Record<string, string>
+  model?: string | null
+  created_at: string
+  updated_at: string
+}

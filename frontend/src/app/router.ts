@@ -7,6 +7,7 @@ import {
 import { Layout } from './Layout'
 import { isAuthenticated } from '@/shared/api/auth'
 import VacanciesPage from '../pages/VacanciesPage'
+import VacancyDetailPage from '../pages/VacancyDetailPage'
 import CandidatesPage from '../pages/CandidatesPage'
 import CandidateDetailPage from '../pages/CandidateDetailPage'
 import ApplicationsPage from '../pages/ApplicationsPage'
@@ -47,6 +48,12 @@ const vacanciesRoute = createRoute({
   component: VacanciesPage,
 })
 
+const vacancyDetailRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/vacancies/$vacancyId',
+  component: VacancyDetailPage,
+})
+
 const candidatesRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/candidates',
@@ -76,6 +83,7 @@ const routeTree = rootRoute.addChildren([
   loginRoute,
   protectedRoute.addChildren([
     vacanciesRoute,
+    vacancyDetailRoute,
     candidatesRoute,
     candidateDetailRoute,
     applicationsRoute,

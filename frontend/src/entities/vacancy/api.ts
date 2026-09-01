@@ -60,6 +60,31 @@ export async function createVacancy(
   })
 }
 
+export async function fetchVacancy(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Vacancy> {
+  return request<Vacancy>(`/api/v1/vacancies/${id}`, { signal })
+}
+
+export interface VacancyUpdatePayload {
+  title?: string
+  description?: string
+  status?: string
+  headcount?: number
+}
+
+export async function updateVacancy(
+  id: string,
+  payload: VacancyUpdatePayload,
+): Promise<Vacancy> {
+  return request<Vacancy>(`/api/v1/vacancies/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+}
+
 export function useVacancies(search = '') {
   return useQuery({
     queryKey: ['vacancies', search],

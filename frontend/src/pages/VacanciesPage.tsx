@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { Plus } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { GlassSearchField } from '@/shared/ui/GlassSearchField'
@@ -15,6 +16,7 @@ import {
   fetchVacancies,
   searchVacancies,
 } from '@/entities/vacancy/api'
+import { buttonPrimaryClass, fieldClass, fieldErrorClass, fieldLabelClass } from '@/shared/ui/field'
 import { ApiError } from '@/shared/api/client'
 import type { Vacancy } from '@/shared/api/types'
 
@@ -49,29 +51,18 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
     mutation.mutate(values)
   }
 
-  const inputClass =
-    'rounded-lg border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-blue)] focus:ring-2 focus:ring-[var(--accent-blue)]/30'
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-[var(--text-secondary)]">Название</span>
-        <input {...register('title')} className={inputClass} />
-        {errors.title && (
-          <span className="text-xs text-[var(--accent-red)]">
-            {errors.title.message}
-          </span>
-        )}
+      <label className="flex flex-col gap-1">
+        <span className={fieldLabelClass}>Название</span>
+        <input {...register('title')} className={fieldClass} />
+        {errors.title && <span className={fieldErrorClass}>{errors.title.message}</span>}
       </label>
-      <label className="flex flex-col gap-1 text-sm">
-        <span className="font-medium text-[var(--text-secondary)]">Описание</span>
-        <textarea {...register('description')} rows={4} className={inputClass} />
+      <label className="flex flex-col gap-1">
+        <span className={fieldLabelClass}>Описание</span>
+        <textarea {...register('description')} rows={4} className={fieldClass} />
       </label>
-      <button
-        type="submit"
-        disabled={isSubmitting}
-        className="self-start rounded-pill bg-[var(--accent-blue)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
+      <button type="submit" disabled={isSubmitting} className={buttonPrimaryClass}>
         Создать
       </button>
       {error && <p className="text-sm text-[var(--accent-red)]">{error}</p>}
@@ -79,27 +70,10 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
   )
 }
 
-function VacancyDetail({ vacancy }: { vacancy: Vacancy }) {
-  return (
-    <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-      <dt className="text-[var(--text-secondary)]">Статус</dt>
-      <dd><StatusBadge status={vacancy.status} /></dd>
-      <dt className="text-[var(--text-secondary)]">Фонд</dt>
-      <dd>{vacancy.headcount}</dd>
-      <dt className="text-[var(--text-secondary)]">Описание</dt>
-      <dd className="col-span-2 whitespace-pre-wrap text-[var(--text-primary)]">
-        {vacancy.description || '—'}
-      </dd>
-      <dt className="text-[var(--text-secondary)]">Создана</dt>
-      <dd>{vacancy.created_at ?? '—'}</dd>
-    </dl>
-  )
-}
-
 export default function VacanciesPage() {
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<Vacancy | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
+  const navigate = useNavigate()
 
   const columns = useMemo<ColumnDef<Vacancy>[]>(
     () => [
@@ -140,16 +114,10 @@ export default function VacanciesPage() {
         fetchPage={fetchPage}
         queryKeyPrefix={['vacancies']}
         search={search}
-        onRowClick={setSelected}
+        onRowClick={(v) =>
+          navigate({ to: '/vacancies/$vacancyId', params: { vacancyId: v.id } })
+        }
       />
-
-      <GlassSheet
-        open={selected !== null}
-        onOpenChange={(open) => { if (!open) setSelected(null) }}
-        title={selected?.title}
-      >
-        {selected && <VacancyDetail vacancy={selected} />}
-      </GlassSheet>
 
       <GlassSheet open={createOpen} onOpenChange={setCreateOpen} title="Новая вакансия">
         <AddVacancyForm onSubmitted={() => setCreateOpen(false)} />

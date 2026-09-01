@@ -6,8 +6,11 @@ import type {
   SourceStat,
 } from '@/shared/api/types'
 
-export async function fetchFunnel(vacancyId: string): Promise<FunnelOut> {
-  return request<FunnelOut>(`/api/v1/analytics/funnel/${vacancyId}`)
+export async function fetchFunnel(
+  vacancyId: string,
+  signal?: AbortSignal,
+): Promise<FunnelOut> {
+  return request<FunnelOut>(`/api/v1/analytics/funnel/${vacancyId}`, { signal })
 }
 
 export async function fetchSources(): Promise<SourceStat[]> {
