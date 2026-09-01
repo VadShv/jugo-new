@@ -12,6 +12,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { SlidersHorizontal } from 'lucide-react'
 import type { Page } from '@/shared/api/types'
 import { cn } from '@/shared/ui/cn'
+import { SkeletonRows } from '@/widgets/Skeleton'
 
 export interface RegistryTableProps<TData> {
   columns: ColumnDef<TData>[]
@@ -91,9 +92,7 @@ export function RegistryTable<TData>({
 
       <div className="flex items-center justify-between">
         <span className="text-xs text-[var(--text-tertiary)]">
-          {query.isLoading
-            ? 'Загрузка…'
-            : `${items.length} записей`}
+          {query.isLoading ? '' : `${items.length} записей`}
         </span>
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
@@ -154,7 +153,11 @@ export function RegistryTable<TData>({
           ))}
         </div>
 
-        {items.length === 0 && !query.isLoading ? (
+        {query.isLoading ? (
+          <div className="p-2">
+            <SkeletonRows count={8} />
+          </div>
+        ) : items.length === 0 ? (
           <div className="flex h-40 items-center justify-center text-sm text-[var(--text-tertiary)]">
             Ничего не найдено
           </div>

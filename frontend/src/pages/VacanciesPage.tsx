@@ -11,6 +11,7 @@ import { GlassSearchField } from '@/shared/ui/GlassSearchField'
 import { GlassSheet } from '@/shared/ui/GlassSheet'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { RegistryTable } from '@/widgets/RegistryTable'
+import { useToast } from '@/widgets/Toaster'
 import {
   createVacancy,
   fetchVacancies,
@@ -28,6 +29,7 @@ type CreateValues = z.infer<typeof createSchema>
 
 function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
   const queryClient = useQueryClient()
+  const { toast } = useToast()
   const [error, setError] = useState<string | null>(null)
   const {
     register,
@@ -40,10 +42,14 @@ function AddVacancyForm({ onSubmitted }: { onSubmitted: () => void }) {
       createVacancy({ title: values.title, description: values.description }),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ['vacancies'] })
+      toast('success', 'Вакансия создана')
       onSubmitted()
     },
-    onError: (e) =>
-      setError(e instanceof ApiError ? e.problem?.detail ?? e.message : 'Ошибка'),
+    onError: (e) => {
+      const msg = e instanceof ApiError ? e.problem?.detail ?? e.message : 'Ошибка'
+      setError(msg)
+      toast('error', 'Ошибка создания', msg)
+    },
   })
 
   const onSubmit = (values: CreateValues) => {

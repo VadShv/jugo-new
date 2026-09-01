@@ -10,12 +10,12 @@
 
 **Цель**: единая типографика, глубина поверхностей, профессиональные карточки, иконки.
 
-- [ ] **UI-1.1 Типографика**: Tailwind `theme.extend.fontSize` — роли (display/lg/base/sm/xs/caption), `fontWeight` (400/500/600/700), `lineHeight` (1.2/1.4/1.5/1.6). Применить во всех заголовках/тексте.
-- [ ] **UI-1.2 Глубина поверхностей**: добавить `--surface-elevated` (между solid и sunken), `--shadow-elevated` (глубже card), градиентные акценты на ключевых кнопках. Обновить `tokens.css`.
-- [ ] **UI-1.3 Карточка-компонент** `widgets/Card.tsx`: unified card (header/body/footer, padding variants, shadow). Заменить inline `rounded-md border ... shadow-card` на `<Card>`.
+- [x] **UI-1.1 Типографика**: Tailwind `theme.extend.fontSize` — роли (display/lg/base/sm/caption), lineHeight. Применить во всех заголовках/тексте.
+- [x] **UI-1.2 Глубина поверхностей**: `--surface-elevated`, `--shadow-elevated`, градиенты. Обновить `tokens.css` + `tailwind.config.ts`.
+- [x] **UI-1.3 Карточка-компонент** `widgets/Card.tsx`: unified card (header/body/footer, padding, shadow variants).
 - [ ] **UI-1.4 Иконки**: добавить `lucide-react` иконки во все ключевые места (реестры, кнопки, табы, empty states). Единый размер (16/20/24) + цвет из токенов.
-- [ ] **UI-1.5 Скелетоны** `widgets/Skeleton.tsx`: shimmer-заглушки вместо «Загрузка…» (table rows, cards, detail pages). CSS `@keyframes shimmer`.
-- [ ] **UI-1.6 Тосты** `widgets/Toaster.tsx`: Radix Toast — success/error/info на мутациях (создание, переход, AI-run). Единая очередь.
+- [x] **UI-1.5 Скелетоны** `widgets/Skeleton.tsx`: shimmer-заглушки (SkeletonRows в RegistryTable, SkeletonCard).
+- [x] **UI-1.6 Тосты** `widgets/Toaster.tsx`: Radix Toast + useToast hook + ToasterProvider в App.tsx. Применено к созданию кандидата/вакансии.
 
 ## UI-2. Структура и навигация (фундаментальность)
 

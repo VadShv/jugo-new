@@ -19,6 +19,7 @@
   --glass-border: rgba(255, 255, 255, 0.5);
   --glass-highlight: rgba(255, 255, 255, 0.7);
   --glass-scrim: rgba(0, 0, 0, 0.32);
+  --surface-elevated: rgba(255, 255, 255, 0.8);
 
   /* Text */
   --text-primary: #1c1c1e;
@@ -44,6 +45,7 @@
   /* Shadows */
   --shadow-glass: 0 1px 3px rgba(0, 0, 0, 0.08), 0 6px 24px rgba(0, 0, 0, 0.06);
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-elevated: 0 2px 8px rgba(0, 0, 0, 0.08), 0 8px 32px rgba(0, 0, 0, 0.06);
   --shadow-modal: 0 12px 48px rgba(0, 0, 0, 0.22);
 
   /* Grid */
@@ -65,6 +67,7 @@
   --surface-canvas: #000000;
   --surface-solid: #1c1c1e;
   --surface-sunken: #2c2c2e;
+  --surface-elevated: rgba(28, 28, 30, 0.8);
 
   --glass-bg-regular: rgba(28, 28, 30, 0.62);
   --glass-bg-clear: rgba(28, 28, 30, 0.38);
@@ -231,4 +234,24 @@ html {
   to {
     transform: translateY(0);
   }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 25%,
+    var(--surface-solid) 50%,
+    var(--surface-sunken) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
