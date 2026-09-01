@@ -12,7 +12,7 @@ from jugo.core.schemas import JobAccepted
 from jugo.core.security import UserPrincipal, require_permission
 from jugo.jobs.queue import enqueue
 from jugo.modules.m1_screening import service
-from jugo.modules.m1_screening.schemas import ScreeningResultOut
+from jugo.modules.m1_screening.schemas import RequirementSetOut, ScreeningResultOut
 
 router = APIRouter(prefix="/screening", tags=["m1_screening"])
 
@@ -53,3 +53,13 @@ async def get_screening(
 ) -> ScreeningResultOut:
     await apply_rls(session, user)
     return await service.get_result(session, application_id)
+
+
+@router.get("/vacancies/{vacancy_id}/requirements", response_model=RequirementSetOut)
+async def get_requirements(
+    vacancy_id: uuid.UUID,
+    session: AsyncSession = Depends(get_session),
+    user: UserPrincipal = Depends(require_permission("screening:read")),
+) -> RequirementSetOut:
+    await apply_rls(session, user)
+    return await service.get_latest_requirements(session, vacancy_id)

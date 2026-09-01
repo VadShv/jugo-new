@@ -100,3 +100,43 @@ export interface RecruiterStat {
   recruiter_id?: string | null
   count: number
 }
+
+export interface Criterion {
+  criterion: string
+  weight: number
+  description?: string | null
+}
+
+export interface RequirementSetOut {
+  id: string
+  vacancy_id: string
+  name: string
+  requirements: Criterion[]
+  is_active: boolean
+  created_at: string
+}
+
+export interface CriterionScore {
+  criterion: string
+  score: number
+  weight: number
+  evidence?: string | null
+  quote?: string | null
+}
+
+export interface ScreeningResultOut {
+  id: string
+  application_id: string
+  vacancy_id: string
+  candidate_id: string
+  requirement_set_id?: string | null
+  total_score?: number | null
+  recommendation?: string | null
+  confidence?: number | null
+  per_criterion: CriterionScore[]
+  model?: string | null
+  status: string
+  is_stale: boolean
+  created_at: string
+  updated_at: string
+}

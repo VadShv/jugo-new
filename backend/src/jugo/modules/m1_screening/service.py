@@ -224,3 +224,23 @@ async def get_result(session: AsyncSession, application_id: uuid.UUID) -> Screen
             detail=str(application_id),
         )
     return ScreeningResultOut.model_validate(screening)
+
+
+async def get_latest_requirements(
+    session: AsyncSession, vacancy_id: uuid.UUID
+) -> RequirementSetOut:
+    result = await session.execute(
+        select(VacancyRequirementSet)
+        .where(
+            VacancyRequirementSet.vacancy_id == vacancy_id,
+            VacancyRequirementSet.is_active.is_(True),
+        )
+        .order_by(VacancyRequirementSet.created_at.desc())
+        .limit(1)
+    )
+    req = result.scalar_one_or_none()
+    if req is None:
+        raise ProblemException(
+            404, "about:blank", "Requirements not found", detail=str(vacancy_id)
+        )
+    return RequirementSetOut.model_validate(req)

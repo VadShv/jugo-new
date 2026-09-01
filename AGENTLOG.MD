@@ -58,7 +58,9 @@
 
 **P2-G10.1 готов (2026-09-01).** Детальная страница кандидата (`/candidates/$candidateId`) с вкладками Сводка/Резюме/Отклики; общие компоненты `DetailLayout`, `useAiJob` (POST :run→202+опрос GET), `AIResultPanel`; реестр → navigate. Загрузка резюме (multipart). `tsc`/`build` зелёные.
 
-**⏭️ Следующий шаг**: `docs/FRONTEND-UI.md` → **G10.2** (M1-панель: генерация критериев + скрининг run+poll + таблица результата + Подтвердить/Оспорить).
+**P2-G10.2 готов (2026-09-01).** M1-панель на вкладке «Оценка» кандидата: селектор отклика → «Сгенерировать критерии» (POST→202+опрос GET) + «Запустить скрининг» (POST→202+опрос) → таблица критерий/балл/доказательство/цитата + total/recommendation/confidence (whitebox). Бэкенд: `GET /screening/vacancies/{id}/requirements`. `tsc`/`build` + `pytest`(31) зелёные.
+
+**⏭️ Следующий шаг**: `docs/FRONTEND-UI.md` → **G10.3** (M2-панель: анализ рисков run+poll + signals + бейдж risk_level).
 
 ---
 
@@ -88,6 +90,7 @@
 | 2026-09-01 | (G7) | P1-G7: arq-воркер (5 AI-функций) + enqueue; M1–M4 :run/:generate → 202 + enqueue; сервис worker в compose. ruff/mypy/pytest(31) зелёные. |
 | 2026-09-01 | `2e7c762` | docs: фиксация статуса + переприоритизация на UI (G10); docs/FRONTEND-UI.md (дизайн фронта). |
 | 2026-09-01 | (G10.1) | P2-G10.1: детальная страница кандидата + DetailLayout/useAiJob/AIResultPanel; реестр→navigate; upload резюме. tsc/build зелёные. |
+| 2026-09-01 | (G10.2) | P2-G10.2: M1-панель (Оценка) — критерии+скрининг run+poll+таблица; бэкенд GET /screening/vacancies/{id}/requirements. tsc/build + pytest(31) зелёные. |
 
 ---
 

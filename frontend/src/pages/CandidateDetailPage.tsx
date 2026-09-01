@@ -5,6 +5,7 @@ import { ArrowLeft, Upload } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { StatusBadge } from '@/shared/ui/StatusBadge'
 import { DetailLayout, type DetailTab } from '@/widgets/DetailLayout'
+import { M1ScreeningPanel } from '@/widgets/M1ScreeningPanel'
 import { fetchCandidate } from '@/entities/candidate/api'
 import { fetchApplications } from '@/entities/application/api'
 import { uploadResume } from '@/entities/resumes/api'
@@ -124,6 +125,7 @@ export default function CandidateDetailPage() {
     { value: 'summary', label: 'Сводка', content: <SummaryTab candidate={candidate} /> },
     { value: 'resume', label: 'Резюме', content: <ResumeTab candidateId={candidateId} /> },
     { value: 'applications', label: 'Отклики', content: <ApplicationsTab candidateId={candidateId} /> },
+    { value: 'screening', label: 'Оценка', content: <M1ScreeningPanel candidateId={candidateId} /> },
   ]
 
   return (
