@@ -166,7 +166,10 @@ export function RegistryTable<TData>({
                 <div
                   key={row.id}
                   data-index={virtualRow.index}
-                  className="absolute left-0 top-0 flex w-full cursor-pointer items-center border-b border-[var(--glass-border)] hover:bg-[var(--surface-sunken)]"
+                  className={cn(
+                    'absolute left-0 top-0 flex w-full cursor-pointer items-center border-b border-[var(--glass-border)] transition-colors hover:bg-[var(--surface-sunken)]',
+                    virtualRow.index % 2 === 1 && 'row-zebra',
+                  )}
                   style={{
                     transform: `translateY(${virtualRow.start}px)`,
                     height: estimateRowHeight,

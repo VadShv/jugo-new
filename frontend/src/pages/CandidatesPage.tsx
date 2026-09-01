@@ -68,7 +68,7 @@ function AddCandidateForm({ onSubmitted }: { onSubmitted: () => void }) {
   }
 
   const inputClass =
-    'rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40'
+    'rounded-lg border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-blue)] focus:ring-2 focus:ring-[var(--accent-blue)]/30'
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">

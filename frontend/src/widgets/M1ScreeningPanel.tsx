@@ -11,7 +11,7 @@ import type {
 } from '@/shared/api/types'
 
 const selectClass =
-  'rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40'
+  'rounded-lg border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm text-[var(--text-primary)] outline-none transition-colors focus:border-[var(--accent-blue)] focus:ring-2 focus:ring-[var(--accent-blue)]/30'
 
 function CriteriaList({ req }: { req: RequirementSetOut }) {
   return (
