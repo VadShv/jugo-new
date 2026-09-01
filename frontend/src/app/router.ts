@@ -11,6 +11,7 @@ import VacancyDetailPage from '../pages/VacancyDetailPage'
 import CandidatesPage from '../pages/CandidatesPage'
 import CandidateDetailPage from '../pages/CandidateDetailPage'
 import ApplicationsPage from '../pages/ApplicationsPage'
+import ApplicationDetailPage from '../pages/ApplicationDetailPage'
 import AnalyticsPage from '../pages/AnalyticsPage'
 import LoginPage from '../pages/LoginPage'
 
@@ -72,6 +73,12 @@ const applicationsRoute = createRoute({
   component: ApplicationsPage,
 })
 
+const applicationDetailRoute = createRoute({
+  getParentRoute: () => protectedRoute,
+  path: '/applications/$applicationId',
+  component: ApplicationDetailPage,
+})
+
 const analyticsRoute = createRoute({
   getParentRoute: () => protectedRoute,
   path: '/analytics',
@@ -87,6 +94,7 @@ const routeTree = rootRoute.addChildren([
     candidatesRoute,
     candidateDetailRoute,
     applicationsRoute,
+    applicationDetailRoute,
     analyticsRoute,
   ]),
 ])

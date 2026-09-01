@@ -1,6 +1,7 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
 import { type ColumnDef } from '@tanstack/react-table'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import * as Select from '@radix-ui/react-select'
 import { ChevronDown, Plus } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
@@ -13,11 +14,11 @@ import {
   createApplication,
   fetchApplications,
   searchApplications,
-  transitionApplication,
 } from '@/entities/application/api'
 import { fetchCandidates } from '@/entities/candidate/api'
 import { fetchVacancies } from '@/entities/vacancy/api'
 import { useDefaultStages } from '@/entities/funnel/api'
+import { fieldClass } from '@/shared/ui/field'
 import { ApiError } from '@/shared/api/client'
 import type { Application, Candidate, Vacancy } from '@/shared/api/types'
 
@@ -70,9 +71,6 @@ function StatusFilter({
   )
 }
 
-const selectClass =
-  'rounded-md border border-[var(--glass-border)] bg-[var(--surface-solid)] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[var(--accent-blue)]/40'
-
 function useSelectData() {
   const candidates = useQuery({
     queryKey: ['candidates-select'],
@@ -123,7 +121,7 @@ function AddApplicationForm({ onSubmitted }: { onSubmitted: () => void }) {
     <form onSubmit={onSubmit} className="flex flex-col gap-3">
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium text-[var(--text-secondary)]">Кандидат</span>
-        <select value={candidateId} onChange={(e) => setCandidateId(e.target.value)} className={selectClass}>
+        <select value={candidateId} onChange={(e) => setCandidateId(e.target.value)} className={fieldClass}>
           <option value="">— выберите —</option>
           {candidates.map((c: Candidate) => (
             <option key={c.id} value={c.id}>
@@ -134,7 +132,7 @@ function AddApplicationForm({ onSubmitted }: { onSubmitted: () => void }) {
       </label>
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium text-[var(--text-secondary)]">Вакансия</span>
-        <select value={vacancyId} onChange={(e) => setVacancyId(e.target.value)} className={selectClass}>
+        <select value={vacancyId} onChange={(e) => setVacancyId(e.target.value)} className={fieldClass}>
           <option value="">— выберите —</option>
           {vacancies.map((v: Vacancy) => (
             <option key={v.id} value={v.id}>{v.title}</option>
@@ -143,7 +141,7 @@ function AddApplicationForm({ onSubmitted }: { onSubmitted: () => void }) {
       </label>
       <label className="flex flex-col gap-1 text-sm">
         <span className="font-medium text-[var(--text-secondary)]">Стадия</span>
-        <select value={stageId} onChange={(e) => setStageId(e.target.value)} className={selectClass}>
+        <select value={stageId} onChange={(e) => setStageId(e.target.value)} className={fieldClass}>
           <option value="">— без стадии —</option>
           {stages.map((s) => (
             <option key={s.id} value={s.id}>{s.name}</option>
@@ -162,103 +160,11 @@ function AddApplicationForm({ onSubmitted }: { onSubmitted: () => void }) {
   )
 }
 
-function ApplicationDetail({
-  application,
-  onTransitioned,
-}: {
-  application: Application
-  onTransitioned: (status: string, stageId: string) => void
-}) {
-  const queryClient = useQueryClient()
-  const { stages } = useDefaultStages()
-  const [stageId, setStageId] = useState('')
-  const [reason, setReason] = useState('')
-  const [error, setError] = useState<string | null>(null)
-
-  const mutation = useMutation({
-    mutationFn: () =>
-      transitionApplication(application.id, {
-        to_stage_id: stageId,
-        reason: reason || undefined,
-      }),
-    onSuccess: (res) => {
-      void queryClient.invalidateQueries({ queryKey: ['applications'] })
-      onTransitioned(res.status, res.to_stage_id)
-      setStageId('')
-      setReason('')
-    },
-    onError: (e) =>
-      setError(e instanceof ApiError ? e.problem?.detail ?? e.message : 'Ошибка'),
-  })
-
-  return (
-    <div className="flex flex-col gap-4 text-sm">
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <span className="text-[var(--text-secondary)]">Статус</span>
-          <StatusBadge status={application.status} />
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-[var(--text-secondary)]">Кандидат</span>
-          <span className="font-mono text-xs">{application.candidate_id}</span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-[var(--text-secondary)]">Вакансия</span>
-          <span className="font-mono text-xs">{application.vacancy_id}</span>
-        </div>
-        {application.screening_score != null && (
-          <div className="flex items-center justify-between">
-            <span className="text-[var(--text-secondary)]">Скрининг</span>
-            <span>{Math.round(application.screening_score * 100)}%</span>
-          </div>
-        )}
-        {application.risk_level && (
-          <div className="flex items-center justify-between">
-            <span className="text-[var(--text-secondary)]">Риск</span>
-            <StatusBadge status={application.risk_level} />
-          </div>
-        )}
-        <div className="flex items-center justify-between">
-          <span className="text-[var(--text-secondary)]">Обновлено</span>
-          <span>{application.updated_at ?? '—'}</span>
-        </div>
-      </div>
-
-      <div className="border-t border-[var(--glass-border)] pt-3">
-        <div className="mb-2 font-medium text-[var(--text-primary)]">Перевести по воронке</div>
-        <div className="flex flex-col gap-2">
-          <select value={stageId} onChange={(e) => setStageId(e.target.value)} className={selectClass}>
-            <option value="">— выберите стадию —</option>
-            {stages.map((s) => (
-              <option key={s.id} value={s.id}>{s.name}</option>
-            ))}
-          </select>
-          <input
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-            placeholder="Причина (необязательно)"
-            className={selectClass}
-          />
-          <button
-            type="button"
-            disabled={!stageId || mutation.isPending}
-            onClick={() => { setError(null); mutation.mutate() }}
-            className="self-start rounded-pill bg-[var(--accent-blue)] px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-          >
-            Перевести
-          </button>
-          {error && <p className="text-sm text-[var(--accent-red)]">{error}</p>}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function ApplicationsPage() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [selected, setSelected] = useState<Application | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
+  const navigate = useNavigate()
 
   const columns = useMemo<ColumnDef<Application>[]>(
     () => [
@@ -318,24 +224,11 @@ export default function ApplicationsPage() {
         fetchPage={fetchPage}
         queryKeyPrefix={['applications', statusFilter]}
         search={search}
-        onRowClick={setSelected}
+        onRowClick={(a) =>
+          navigate({ to: '/applications/$applicationId', params: { applicationId: a.id } })
+        }
         renderHeader={renderHeader}
       />
-
-      <GlassSheet
-        open={selected !== null}
-        onOpenChange={(open) => { if (!open) setSelected(null) }}
-        title="Отклик"
-      >
-        {selected && (
-          <ApplicationDetail
-            application={selected}
-            onTransitioned={(status, stageId) =>
-              setSelected({ ...selected, status, current_stage_id: stageId })
-            }
-          />
-        )}
-      </GlassSheet>
 
       <GlassSheet open={createOpen} onOpenChange={setCreateOpen} title="Новый отклик">
         <AddApplicationForm onSubmitted={() => setCreateOpen(false)} />

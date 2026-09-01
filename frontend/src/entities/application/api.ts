@@ -66,6 +66,13 @@ export async function fetchApplications({
   })
 }
 
+export async function fetchApplication(
+  id: string,
+  signal?: AbortSignal,
+): Promise<Application> {
+  return request<Application>(`/api/v1/applications/${id}`, { signal })
+}
+
 export async function searchApplications({
   q,
   cursor,
