@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useNavigate } from '@tanstack/react-router'
 import { Bookmark, Plus } from 'lucide-react'
 import { GlassTopBar } from '@/shared/ui/GlassTopBar'
 import { GlassSearchField } from '@/shared/ui/GlassSearchField'
@@ -14,7 +15,6 @@ import {
   fetchCandidates,
   searchCandidates,
 } from '@/entities/candidate/api'
-import { CandidateCard } from '@/entities/candidate/CandidateCard'
 import { useUiStore } from '@/app/store'
 import { ApiError } from '@/shared/api/client'
 import type { Candidate } from '@/shared/api/types'
@@ -120,8 +120,8 @@ function AddCandidateForm({ onSubmitted }: { onSubmitted: () => void }) {
 
 export default function CandidatesPage() {
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<Candidate | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
+  const navigate = useNavigate()
   const savedView = useUiStore((state) => state.savedView)
   const setSavedView = useUiStore((state) => state.setSavedView)
 
@@ -178,16 +178,10 @@ export default function CandidatesPage() {
         fetchPage={fetchPage}
         queryKeyPrefix={['candidates']}
         search={search}
-        onRowClick={setSelected}
+        onRowClick={(c) =>
+          navigate({ to: '/candidates/$candidateId', params: { candidateId: c.id } })
+        }
       />
-
-      <GlassSheet
-        open={selected !== null}
-        onOpenChange={(open) => { if (!open) setSelected(null) }}
-        title={selected ? fullName(selected) : undefined}
-      >
-        {selected && <CandidateCard candidate={selected} />}
-      </GlassSheet>
 
       <GlassSheet open={createOpen} onOpenChange={setCreateOpen} title="Новый кандидат">
         <AddCandidateForm onSubmitted={() => setCreateOpen(false)} />

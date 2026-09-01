@@ -7,6 +7,8 @@ export interface FetchArgs {
   search?: string
   signal?: AbortSignal
   status?: string
+  candidateId?: string
+  vacancyId?: string
 }
 
 export interface SearchArgs {
@@ -37,10 +39,17 @@ export interface TransitionResult {
   transition_id: string
 }
 
-function listPath(cursor?: string, status?: string): string {
+function listPath(
+  cursor?: string,
+  status?: string,
+  candidateId?: string,
+  vacancyId?: string,
+): string {
   const params = new URLSearchParams()
   if (cursor) params.set('cursor', cursor)
   if (status) params.set('status', status)
+  if (candidateId) params.set('candidate_id', candidateId)
+  if (vacancyId) params.set('vacancy_id', vacancyId)
   params.set('limit', '50')
   return `/api/v1/applications?${params.toString()}`
 }
@@ -49,8 +58,12 @@ export async function fetchApplications({
   cursor,
   signal,
   status,
+  candidateId,
+  vacancyId,
 }: FetchArgs): Promise<Page<Application>> {
-  return request<Page<Application>>(listPath(cursor, status), { signal })
+  return request<Page<Application>>(listPath(cursor, status, candidateId, vacancyId), {
+    signal,
+  })
 }
 
 export async function searchApplications({

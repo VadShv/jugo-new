@@ -63,6 +63,10 @@ export async function createCandidate(
   })
 }
 
+export async function fetchCandidate(id: string, signal?: AbortSignal): Promise<Candidate> {
+  return request<Candidate>(`/api/v1/candidates/${id}`, { signal })
+}
+
 export function useCandidates(search = '') {
   return useQuery({
     queryKey: ['candidates', search],
