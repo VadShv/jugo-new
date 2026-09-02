@@ -66,3 +66,17 @@ class ActivityOut(BaseModel):
     description: str
     metadata: dict[str, Any] | None = None
     created_at: datetime
+
+
+class RejectRequest(BaseModel):
+    reason_code: str = Field(..., min_length=1, max_length=64)
+    comment: str | None = Field(default=None, max_length=2000)
+
+
+class RejectReasonOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: uuid.UUID
+    code: str
+    label: str
+    is_active: bool

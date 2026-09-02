@@ -15,6 +15,8 @@ from jugo.domains.applications.schemas import (
     ApplicationOut,
     ApplicationPage,
     ApplicationUpdate,
+    RejectReasonOut,
+    RejectRequest,
 )
 from jugo.domains.funnel import service as funnel_service
 from jugo.domains.funnel.schemas import TransitionRequest, TransitionResult
@@ -101,3 +103,35 @@ async def list_activities(
 ) -> list[ActivityOut]:
     await apply_rls(session, user)
     return await service.list_activities(session, application_id, limit=limit)
+
+
+@router.post("/{application_id}/reject", response_model=ApplicationOut)
+async def reject_application(
+    application_id: uuid.UUID,
+    payload: RejectRequest,
+    session: AsyncSession = Depends(get_session),
+    user: UserPrincipal = Depends(require_permission("application:write")),
+) -> ApplicationOut:
+    await apply_rls(session, user)
+    return await service.reject(
+        session, application_id, payload.reason_code, payload.comment, user.user_id
+    )
+
+
+@router.post("/{application_id}/restore", response_model=ApplicationOut)
+async def restore_application(
+    application_id: uuid.UUID,
+    session: AsyncSession = Depends(get_session),
+    user: UserPrincipal = Depends(require_permission("application:write")),
+) -> ApplicationOut:
+    await apply_rls(session, user)
+    return await service.restore(session, application_id, user.user_id)
+
+
+@router.get("/dictionaries/reject-reasons", response_model=list[RejectReasonOut])
+async def list_reject_reasons(
+    session: AsyncSession = Depends(get_session),
+    user: UserPrincipal = Depends(require_permission("application:read")),
+) -> list[RejectReasonOut]:
+    await apply_rls(session, user)
+    return await service.list_reject_reasons(session)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Float, Integer, String, Text
+from sqlalchemy import Boolean, Float, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 
 from jugo.core.models_base import Base, TenantMixin
@@ -26,3 +26,11 @@ class Application(TenantMixin, Base):
     salary_expectation: Mapped[str | None] = mapped_column(Text)
     rejection_reason_code: Mapped[str | None] = mapped_column(String(64))
     rejection_comment: Mapped[str | None] = mapped_column(Text)
+
+
+class RejectReason(TenantMixin, Base):
+    __tablename__ = "reject_reasons"
+
+    code: Mapped[str] = mapped_column(String(64))
+    label: Mapped[str] = mapped_column(String(255))
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)

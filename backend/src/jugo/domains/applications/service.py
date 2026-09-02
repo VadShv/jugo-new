@@ -8,15 +8,17 @@ from typing import Any
 from sqlalchemy import and_, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from jugo.core import audit, outbox
 from jugo.core.db import decode_cursor, encode_cursor
 from jugo.core.errors import ProblemException
-from jugo.domains.applications.models import Application
+from jugo.domains.applications.models import Application, RejectReason
 from jugo.domains.applications.schemas import (
     ActivityOut,
     ApplicationCreate,
     ApplicationOut,
     ApplicationPage,
     ApplicationUpdate,
+    RejectReasonOut,
 )
 
 DEFAULT_LIMIT = 50
@@ -164,3 +166,85 @@ async def list_activities(
             )
         )
     return activities
+
+
+async def reject(
+    session: AsyncSession,
+    application_id: uuid.UUID,
+    reason_code: str,
+    comment: str | None,
+    actor: uuid.UUID,
+) -> ApplicationOut:
+    result = await session.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if app is None:
+        raise ProblemException(
+            404, "about:blank", "Application not found", detail=str(application_id)
+        )
+    app.status = "rejected"
+    app.rejection_reason_code = reason_code
+    app.rejection_comment = comment
+    app.version += 1
+    await session.flush()
+    await session.refresh(app)
+    await audit.audit(
+        session,
+        actor_id=actor,
+        action="application.rejected",
+        entity_type="application",
+        entity_id=application_id,
+        after={"reason_code": reason_code, "comment": comment},
+    )
+    await outbox.publish(
+        session,
+        event_type="application.rejected",
+        aggregate_type="application",
+        aggregate_id=application_id,
+        payload={"reason_code": reason_code},
+        actor=actor,
+    )
+    return ApplicationOut.model_validate(app)
+
+
+async def restore(
+    session: AsyncSession,
+    application_id: uuid.UUID,
+    actor: uuid.UUID,
+) -> ApplicationOut:
+    result = await session.execute(select(Application).where(Application.id == application_id))
+    app = result.scalar_one_or_none()
+    if app is None:
+        raise ProblemException(
+            404, "about:blank", "Application not found", detail=str(application_id)
+        )
+    app.status = "active"
+    app.rejection_reason_code = None
+    app.rejection_comment = None
+    app.version += 1
+    await session.flush()
+    await session.refresh(app)
+    await audit.audit(
+        session,
+        actor_id=actor,
+        action="application.restored",
+        entity_type="application",
+        entity_id=application_id,
+    )
+    await outbox.publish(
+        session,
+        event_type="application.restored",
+        aggregate_type="application",
+        aggregate_id=application_id,
+        payload={},
+        actor=actor,
+    )
+    return ApplicationOut.model_validate(app)
+
+
+async def list_reject_reasons(session: AsyncSession) -> list[RejectReasonOut]:
+    result = await session.execute(
+        select(RejectReason)
+        .where(RejectReason.is_active.is_(True))
+        .order_by(RejectReason.code.asc())
+    )
+    return [RejectReasonOut.model_validate(r) for r in result.scalars().all()]
