@@ -5,6 +5,7 @@ from fastapi import APIRouter
 from jugo.domains.applications.router import router as applications_router
 from jugo.domains.auth.router import router as auth_router
 from jugo.domains.candidates.router import router as candidates_router
+from jugo.domains.comments.router import router as comments_router
 from jugo.domains.events.router import router as events_router
 from jugo.domains.files.router import router as files_router
 from jugo.domains.funnel.router import router as funnel_router
@@ -30,6 +31,7 @@ api_router.include_router(funnel_router)
 api_router.include_router(search_router)
 api_router.include_router(files_router)
 api_router.include_router(organization_router)
+api_router.include_router(comments_router)
 api_router.include_router(m1_screening_router)
 api_router.include_router(m2_risk_router)
 api_router.include_router(m3_questions_router)

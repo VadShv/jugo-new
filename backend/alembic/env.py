@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 import jugo.domains.applications.models  # noqa: F401
 import jugo.domains.auth.models  # noqa: F401
 import jugo.domains.candidates.models  # noqa: F401
+import jugo.domains.comments.models  # noqa: F401
 import jugo.domains.funnel.models  # noqa: F401
 import jugo.domains.organization.models  # noqa: F401
 import jugo.domains.resumes.models  # noqa: F401
