@@ -12,6 +12,7 @@ from jugo.domains.funnel.router import router as funnel_router
 from jugo.domains.organization.router import router as organization_router
 from jugo.domains.resumes.router import router as resumes_router
 from jugo.domains.search.router import router as search_router
+from jugo.domains.tasks.router import router as tasks_router
 from jugo.domains.vacancies.router import router as vacancies_router
 from jugo.modules.m1_screening.router import router as m1_screening_router
 from jugo.modules.m2_risk.router import router as m2_risk_router
@@ -32,6 +33,7 @@ api_router.include_router(search_router)
 api_router.include_router(files_router)
 api_router.include_router(organization_router)
 api_router.include_router(comments_router)
+api_router.include_router(tasks_router)
 api_router.include_router(m1_screening_router)
 api_router.include_router(m2_risk_router)
 api_router.include_router(m3_questions_router)

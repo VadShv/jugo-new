@@ -45,6 +45,8 @@ ROLE_PERMISSIONS: dict[str, list[str]] = {
         "analytics:read",
         "comment:write",
         "comment:read",
+        "task:write",
+        "task:read",
     ],
     "hiring_manager": [
         "candidate:read",

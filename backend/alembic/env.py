@@ -14,6 +14,7 @@ import jugo.domains.comments.models  # noqa: F401
 import jugo.domains.funnel.models  # noqa: F401
 import jugo.domains.organization.models  # noqa: F401
 import jugo.domains.resumes.models  # noqa: F401
+import jugo.domains.tasks.models  # noqa: F401
 import jugo.domains.vacancies.models  # noqa: F401
 from alembic import context
 from jugo.core.config import get_settings
