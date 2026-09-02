@@ -19,6 +19,7 @@ depends_on = None
 def upgrade() -> None:
     op.execute(
         "ALTER TABLE comment_threads "
+        "ADD COLUMN IF NOT EXISTS application_id uuid, "
         "ADD COLUMN IF NOT EXISTS parent_id uuid REFERENCES comment_threads(id) ON DELETE CASCADE, "
         "ADD COLUMN IF NOT EXISTS updated_by uuid, "
         "ADD COLUMN IF NOT EXISTS deleted_at timestamptz"
