@@ -19,12 +19,12 @@ depends_on = None
 def upgrade() -> None:
     op.execute(
         "ALTER TABLE comment_threads "
-        "ADD COLUMN parent_id uuid REFERENCES comment_threads(id) ON DELETE CASCADE, "
-        "ADD COLUMN updated_by uuid, "
-        "ADD COLUMN deleted_at timestamptz"
+        "ADD COLUMN IF NOT EXISTS parent_id uuid REFERENCES comment_threads(id) ON DELETE CASCADE, "
+        "ADD COLUMN IF NOT EXISTS updated_by uuid, "
+        "ADD COLUMN IF NOT EXISTS deleted_at timestamptz"
     )
     op.execute(
-        "CREATE INDEX ix_comment_threads_application "
+        "CREATE INDEX IF NOT EXISTS ix_comment_threads_application "
         "ON comment_threads (application_id, created_at DESC)"
     )
 
