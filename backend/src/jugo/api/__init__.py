@@ -14,6 +14,7 @@ from jugo.domains.resumes.router import router as resumes_router
 from jugo.domains.search.router import router as search_router
 from jugo.domains.tasks.router import router as tasks_router
 from jugo.domains.vacancies.router import router as vacancies_router
+from jugo.domains.workspace.router import router as workspace_router
 from jugo.modules.m1_screening.router import router as m1_screening_router
 from jugo.modules.m2_risk.router import router as m2_risk_router
 from jugo.modules.m3_questions.router import router as m3_questions_router
@@ -40,5 +41,6 @@ api_router.include_router(m3_questions_router)
 api_router.include_router(m4_searchmap_router)
 api_router.include_router(m5_analytics_router)
 api_router.include_router(m6_scheduler_router)
+api_router.include_router(workspace_router)
 
 __all__ = ["api_router"]
