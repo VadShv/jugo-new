@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -56,3 +57,12 @@ class ApplicationPage(BaseModel):
     items: list[ApplicationOut]
     next_cursor: str | None = None
     has_more: bool = False
+
+
+class ActivityOut(BaseModel):
+    id: str
+    type: str
+    actor_id: uuid.UUID | None = None
+    description: str
+    metadata: dict[str, Any] | None = None
+    created_at: datetime

@@ -10,6 +10,7 @@ from jugo.core.rls import apply_rls
 from jugo.core.security import UserPrincipal, require_permission
 from jugo.domains.applications import service
 from jugo.domains.applications.schemas import (
+    ActivityOut,
     ApplicationCreate,
     ApplicationOut,
     ApplicationPage,
@@ -32,7 +33,7 @@ async def list_applications(
     user: UserPrincipal = Depends(require_permission("application:read")),
 ) -> ApplicationPage:
     await apply_rls(session, user)
-    return await service.list(
+    return await service.list_applications(
         session,
         limit=limit,
         cursor=cursor,
@@ -89,3 +90,14 @@ async def transition_application(
         reason=payload.reason,
         version=payload.version,
     )
+
+
+@router.get("/{application_id}/activities", response_model=list[ActivityOut])
+async def list_activities(
+    application_id: uuid.UUID,
+    limit: int = Query(default=50, ge=1, le=200),
+    session: AsyncSession = Depends(get_session),
+    user: UserPrincipal = Depends(require_permission("application:read")),
+) -> list[ActivityOut]:
+    await apply_rls(session, user)
+    return await service.list_activities(session, application_id, limit=limit)

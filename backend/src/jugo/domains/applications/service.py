@@ -1,15 +1,18 @@
 from __future__ import annotations
 
+import json
 import uuid
 from datetime import datetime
+from typing import Any
 
-from sqlalchemy import and_, or_, select
+from sqlalchemy import and_, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from jugo.core.db import decode_cursor, encode_cursor
 from jugo.core.errors import ProblemException
 from jugo.domains.applications.models import Application
 from jugo.domains.applications.schemas import (
+    ActivityOut,
     ApplicationCreate,
     ApplicationOut,
     ApplicationPage,
@@ -41,7 +44,7 @@ async def get(session: AsyncSession, application_id: uuid.UUID) -> ApplicationOu
     return ApplicationOut.model_validate(application)
 
 
-async def list(
+async def list_applications(
     session: AsyncSession,
     limit: int = DEFAULT_LIMIT,
     cursor: str | None = None,
@@ -104,3 +107,60 @@ async def update(
     await session.flush()
     await session.refresh(application)
     return ApplicationOut.model_validate(application)
+
+
+async def list_activities(
+    session: AsyncSession, application_id: uuid.UUID, limit: int = 50
+) -> list[ActivityOut]:
+    query = text(
+        """
+        SELECT 'stage_changed' AS type, id::text, actor_id,
+               COALESCE('Переход: ' || reason, 'Переход по воронке') AS description,
+               jsonb_build_object(
+                   'from_stage_id', from_stage_id,
+                   'to_stage_id', to_stage_id
+               ) AS metadata,
+               created_at
+        FROM stage_transitions WHERE application_id = :app_id
+        UNION ALL
+        SELECT
+            CASE
+                WHEN action LIKE 'm1.%' THEN 'screening'
+                WHEN action LIKE 'm2.%' THEN 'risk'
+                WHEN action LIKE 'm3.%' THEN 'questions'
+                WHEN action LIKE 'm4.%' THEN 'searchmap'
+                WHEN action LIKE 'm6.%' THEN 'interview'
+                WHEN action = 'application.created' THEN 'created'
+                WHEN action = 'application.updated' THEN 'updated'
+                ELSE 'system'
+            END AS type,
+            id::text, actor_id,
+            action AS description,
+            "after" AS metadata,
+            created_at
+        FROM audit_log
+        WHERE entity_type = 'application'
+              AND entity_id = :app_id
+              AND action != 'application.transition'
+        ORDER BY created_at DESC
+        LIMIT :limit
+        """
+    )
+    result = await session.execute(query, {"app_id": str(application_id), "limit": limit})
+    rows = result.mappings().all()
+    activities: list[ActivityOut] = []
+    for row in rows:
+        metadata: dict[str, Any] | None = row["metadata"]
+        if isinstance(metadata, str):
+            metadata = json.loads(metadata) if metadata else None
+        activities.append(
+            ActivityOut(
+                id=row["id"],
+                type=row["type"],
+                actor_id=row["actor_id"],
+                description=row["description"],
+                metadata=metadata,
+                created_at=row["created_at"],
+            )
+        )
+    return activities

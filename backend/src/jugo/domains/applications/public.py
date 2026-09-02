@@ -41,7 +41,7 @@ async def list_applications(
     status: str | None = None,
 ) -> ApplicationPage:
     await apply_rls(session, principal)
-    return await service.list(
+    return await service.list_applications(
         session,
         limit=limit,
         cursor=cursor,
